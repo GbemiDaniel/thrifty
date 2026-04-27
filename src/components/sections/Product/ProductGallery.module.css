@@ -1,0 +1,120 @@
+/* Container holds both the thumbs and main image */
+.galleryContainer {
+    display: grid;
+    width: 100%;
+}
+
+/* MOBILE FIRST (and default): Stack them vertically */
+@media (max-width: 767px) {
+    .galleryContainer {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        /* 16px */
+    }
+}
+
+/* DESKTOP (md and up): The strict split */
+@media (min-width: 768px) {
+    .galleryContainer {
+        /* Thumbs take 15%, Main takes 85% */
+        grid-template-columns: 15% 1fr;
+        gap: 1.5rem;
+        /* 24px */
+        height: 700px;
+        /* Force a consistent visual height */
+    }
+}
+
+/* --- THE STICKY LEFT COLUMN --- */
+.thumbnailColumn {
+    display: flex;
+}
+
+/* MOBILE: Horizontal scrolling strip */
+@media (max-width: 767px) {
+    .thumbnailColumn {
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 0.75rem;
+        padding-bottom: 0.5rem;
+        /* hide standard scrollbar */
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .thumbnailColumn::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+/* DESKTOP: Vertical scrolling sticky strip */
+@media (min-width: 768px) {
+    .thumbnailColumn {
+        flex-direction: col;
+        overflow-y: auto;
+        gap: 1rem;
+        /* This makes it stick while the right column (actions) scrolls */
+        position: sticky;
+        top: 2rem;
+        /* Give it some breathing room from the top navbar */
+        align-self: start;
+        height: 100%;
+    }
+}
+
+.thumbBox {
+    position: relative;
+    width: 100%;
+    background-color: var(--color-gray-100);
+    /* use your global gray */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 2px solid transparent;
+}
+
+/* MOBILE: Give thumbs a specific width so they form a row */
+@media (max-width: 767px) {
+    .thumbBox {
+        width: 30%;
+        aspect-ratio: 1 / 1;
+        flex-shrink: 0;
+    }
+}
+
+/* DESKTOP: Thumbs are 100% of the 15% grid column */
+@media (min-width: 768px) {
+    .thumbBox {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+    }
+}
+
+.thumbBoxActive {
+    border-color: var(--color-black);
+    /* Global active color */
+}
+
+/* --- THE MAIN RIGHT COLUMN --- */
+.mainImageColumn {
+    position: relative;
+    width: 100%;
+    border-radius: 4px;
+    overflow: hidden;
+    background-color: var(--color-gray-100);
+}
+
+/* MOBILE: Large, square hero shot */
+@media (max-width: 767px) {
+    .mainImageColumn {
+        aspect-ratio: 1 / 1;
+    }
+}
+
+/* DESKTOP: The remaining space in the grid */
+@media (min-width: 768px) {
+    .mainImageColumn {
+        height: 100%;
+    }
+}

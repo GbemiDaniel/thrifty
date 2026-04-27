@@ -1,0 +1,22 @@
+.imageOverlay {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+/* REFINEMENT: Removed the top darkening mask entirely. 
+   Only a smooth, short gradient at the very bottom to protect the caption text. */
+.imageOverlay::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top,
+            rgba(0, 0, 0, 0.5) 0%,
+            rgba(0, 0, 0, 0) 30%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.imageOverlay img {
+    z-index: 0;
+}

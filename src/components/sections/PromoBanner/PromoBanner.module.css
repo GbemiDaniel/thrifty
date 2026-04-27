@@ -1,0 +1,21 @@
+/* 
+  Additive gradient overlay.
+  This pins to the left edge of the image container, blending the image perfectly into the #dcdcdc background.
+  Because it's an overlay and not an alpha mask, the right edge is completely un-processed and physically 
+  untouched by the compositor, guaranteeing a razor-sharp, gapless right edge.
+*/
+.imageFadeOverlay {
+    position: absolute;
+    inset: 0 auto 0 0; /* Pin top, left, bottom */
+    width: 50%;
+    background: linear-gradient(to right, #dcdcdc 0%, #dcdcdc 10%, transparent 100%);
+    z-index: 10;
+}
+
+/* On mobile, we stretch the fade to ensure smooth blending behind the text */
+@media (max-width: 767px) {
+    .imageFadeOverlay {
+        width: 65%;
+        background: linear-gradient(to right, #dcdcdc 0%, #dcdcdc 20%, transparent 100%);
+    }
+}

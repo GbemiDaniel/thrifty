@@ -1,0 +1,22 @@
+.activeTab {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--foreground);
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--foreground);
+    transition: all 0.2s ease;
+}
+
+.inactiveTab {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: rgba(10, 10, 10, 0.4);
+    /* Faded text for inactive */
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.inactiveTab:hover {
+    color: var(--foreground);
+}

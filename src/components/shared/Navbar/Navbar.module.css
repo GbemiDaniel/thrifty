@@ -1,0 +1,27 @@
+.navLink {
+    position: relative;
+    /* Switched from var(--foreground) to currentColor to inherit text-white from the parent */
+    color: currentColor;
+    transition: opacity 0.2s ease;
+}
+
+.navLink::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    /* Also switched the underline to currentColor */
+    background-color: currentColor;
+    transition: width 0.3s ease;
+}
+
+/* Added a subtle opacity shift on hover to match the right-side links */
+.navLink:hover {
+    opacity: 0.8;
+}
+
+.navLink:hover::after {
+    width: 100%;
+}
