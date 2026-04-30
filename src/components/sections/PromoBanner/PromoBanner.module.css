@@ -8,7 +8,7 @@
     position: absolute;
     inset: 0 auto 0 0; /* Pin top, left, bottom */
     width: 50%;
-    background: linear-gradient(to right, #dcdcdc 0%, #dcdcdc 10%, transparent 100%);
+    background: linear-gradient(to right, var(--border) 0%, var(--border) 10%, transparent 100%);
     z-index: 10;
 }
 
@@ -16,6 +16,6 @@
 @media (max-width: 767px) {
     .imageFadeOverlay {
         width: 65%;
-        background: linear-gradient(to right, #dcdcdc 0%, #dcdcdc 20%, transparent 100%);
+        background: linear-gradient(to right, var(--border) 0%, var(--border) 20%, transparent 100%);
     }
 }

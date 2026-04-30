@@ -1,5 +1,8 @@
-import { Raleway } from 'next/font/google';
+import { Raleway, Inter } from 'next/font/google';
 import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
 const raleway = Raleway({
   subsets: ['latin'],
@@ -14,10 +17,10 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className={cn("font-sans", inter.variable)}>
       <body
         suppressHydrationWarning
-        className={`${raleway.variable} font-sans flex flex-col min-h-screen bg-background text-foreground overflow-x-hidden`}
+        className={`${raleway.variable} font-sans flex flex-col min-h-screen bg-background text-foreground`}
       >
 
         {/* Main content takes up available flex space, pushing the footer down */}

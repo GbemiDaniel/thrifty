@@ -1,19 +1,19 @@
 export default function DeliveryReturns() {
     return (
-        <div className="w-full border border-gray-200 bg-white p-4 md:p-6">
+        <div className="w-full border border-gray-200 bg-background p-4 md:p-6">
 
             {/* Header */}
             <h3 className="text-sm font-medium text-gray-500 mb-1">Delivery & Returns</h3>
-            <h4 className="text-xl font-bold uppercase tracking-wide text-black mb-6">THRIFTY.COM</h4>
+            <h4 className="text-xl font-bold uppercase tracking-wide text-foreground mb-6">THRIFTY.COM</h4>
 
             {/* Location Selectors */}
             <div className="mb-8">
                 <span className="block text-xs text-gray-500 mb-3">Choose Location</span>
                 <div className="space-y-3">
-                    <select className="w-full border border-gray-100 bg-white p-3 text-xs text-gray-700 outline-none focus:border-gray-300 appearance-none cursor-pointer">
+                    <select className="w-full border border-gray-100 bg-background p-3 text-xs text-gray-700 outline-none focus:border-gray-300 appearance-none cursor-pointer">
                         <option value="">Select State</option>
                     </select>
-                    <select className="w-full border border-gray-100 bg-white p-3 text-xs text-gray-700 outline-none focus:border-gray-300 appearance-none cursor-pointer">
+                    <select className="w-full border border-gray-100 bg-background p-3 text-xs text-gray-700 outline-none focus:border-gray-300 appearance-none cursor-pointer">
                         <option value="">Select City / Area</option>
                     </select>
                 </div>
@@ -32,8 +32,8 @@ export default function DeliveryReturns() {
                         </svg>
                     </div>
                     <div>
-                        <h5 className="text-sm font-medium text-black mb-0.5">Pickup station</h5>
-                        <p className="text-[10px] text-gray-400 mb-1.5 uppercase tracking-wide">Delivery Fees: $20</p>
+                        <h5 className="text-sm font-medium text-foreground mb-0.5">Pickup station</h5>
+                        <p className="text-xs text-gray-400 mb-1.5 uppercase tracking-wide">Delivery Fees: $20</p>
                         <p className="text-xs text-gray-500 leading-relaxed">Ready for pickup between 10th Feb and 06 March if you order within the next 24hrs</p>
                     </div>
                 </div>
@@ -49,8 +49,8 @@ export default function DeliveryReturns() {
                         </svg>
                     </div>
                     <div>
-                        <h5 className="text-sm font-medium text-black mb-0.5">Door Delivery</h5>
-                        <p className="text-[10px] text-gray-400 mb-1.5 uppercase tracking-wide">Delivery Fees: $50</p>
+                        <h5 className="text-sm font-medium text-foreground mb-0.5">Door Delivery</h5>
+                        <p className="text-xs text-gray-400 mb-1.5 uppercase tracking-wide">Delivery Fees: $50</p>
                         <p className="text-xs text-gray-500 leading-relaxed">Ready for pickup between 10th Feb and 06 March if you order within the next 24hrs</p>
                     </div>
                 </div>
@@ -64,8 +64,8 @@ export default function DeliveryReturns() {
                         </svg>
                     </div>
                     <div>
-                        <h5 className="text-sm font-medium text-black mb-0.5">Return Policy</h5>
-                        <p className="text-[10px] text-gray-400 mb-1.5 uppercase tracking-wide">Delivery Fees: $50</p>
+                        <h5 className="text-sm font-medium text-foreground mb-0.5">Return Policy</h5>
+                        <p className="text-xs text-gray-400 mb-1.5 uppercase tracking-wide">Delivery Fees: $50</p>
                         <p className="text-xs text-gray-500 leading-relaxed">Ready for pickup between 10th Feb and 06 March if you order within the next 24hrs</p>
                     </div>
                 </div>

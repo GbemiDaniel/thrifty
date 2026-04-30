@@ -61,4 +61,4 @@ Thrifty follows a "Stealth Dark" and "Minimalist White" aesthetic depending on t
 
 ---
 
-Built with ❤️ by the Thrifty Team.
+Built with ❤️ by the Rolling Dice Studios Team.
