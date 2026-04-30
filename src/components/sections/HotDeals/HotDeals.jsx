@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
+import { AnimatePresence } from "framer-motion";
 import ProductCard from "@/components/shared/ProductCard/ProductCard";
-import { ScrollReveal } from "@/components/ui/motion-wrappers";
+import { ScrollReveal, StaggerContainer, FadeUp } from "@/components/ui/motion-wrappers";
 import { hotDealsData } from "@/lib/constants";
 
 export default function HotDeals() {
@@ -16,7 +17,6 @@ export default function HotDeals() {
     const currentProducts = hotDealsData[activeTab] || [];
 
     return (
-        // STRUCTURAL FIX: Aligned perfectly to the Navbar's 1440px master track with matching md:px-12 padding.
         <section className="w-full max-w-[1440px] mx-auto px-4 md:px-12 py-16 md:py-24 flex flex-col items-center overflow-hidden">
 
             {/* Header */}
@@ -49,14 +49,24 @@ export default function HotDeals() {
                 </div>
             </ScrollReveal>
 
-            {/* Product Grid: constraint removed. Now flows completely to the edges of the parent padding. */}
-            <div key={activeTab} className="w-full grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-x-6 md:gap-y-12">
-                {currentProducts.map((product, index) => (
-                    <ScrollReveal key={product.id} delay={index * 0.1} className="h-full w-full">
-                        <ProductCard {...product} />
-                    </ScrollReveal>
-                ))}
-            </div>
+            {/* 
+                THE FIX: 
+                1. AnimatePresence crossfades the DOM nodes to prevent layout thrashing.
+                2. StaggerContainer uses ONE observer for the whole grid.
+                3. FadeUp animates the individual cards without extra observers.
+            */}
+            <AnimatePresence mode="wait">
+                <StaggerContainer
+                    key={activeTab}
+                    className="w-full grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-x-6 md:gap-y-12"
+                >
+                    {currentProducts.map((product) => (
+                        <FadeUp key={product.id} className="h-full w-full">
+                            <ProductCard {...product} />
+                        </FadeUp>
+                    ))}
+                </StaggerContainer>
+            </AnimatePresence>
 
             {/* Action Button */}
             <ScrollReveal delay={0.3} className="w-full mt-10 md:mt-14 flex justify-center">

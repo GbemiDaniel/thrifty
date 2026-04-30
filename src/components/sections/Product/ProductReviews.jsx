@@ -118,7 +118,7 @@ export default function ProductReviews() {
                         </div>
 
                         {/* Review Content */}
-                        <p className="text-sm text-gray-500 leading-relaxed flex-grow">
+                        <p className="text-sm text-gray-500 leading-relaxed grow">
                             "{review.content}"
                         </p>
 

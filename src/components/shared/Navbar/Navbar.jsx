@@ -1,11 +1,29 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Search, ShoppingCart, Menu, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Search, ShoppingCart, Menu, X, ArrowRight } from "lucide-react";
 import { SlideDownHeader } from "@/components/ui/motion-wrappers";
 
 export default function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const router = useRouter();
+
+    // 2. Dynamic Scroll State (The Sticky Logic)
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 50);
+        };
+        
+        window.addEventListener("scroll", handleScroll);
+        // Trigger immediately to catch initial state
+        handleScroll();
+        
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
 
     // Lock body scroll when mobile menu is open
     useEffect(() => {
@@ -17,76 +35,149 @@ export default function Navbar() {
         return () => { document.body.style.overflow = "unset"; };
     }, [isMobileMenuOpen]);
 
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+            setIsSearchOpen(false);
+            setSearchQuery("");
+        }
+    };
+
+    // 1. The Stacking Context Fix: React Fragment <></>
     return (
-        <SlideDownHeader className="absolute top-0 left-0 w-full z-[100] transition-colors duration-300">
+        <>
+            <SlideDownHeader className="fixed top-0 left-0 w-full z-[100] transition-all duration-300">
 
-            {/* ==============================================
-                A. MOBILE NODE (<md)
-                ============================================== */}
-            <div className="flex md:hidden w-full h-20 px-4 bg-background text-foreground items-center justify-between border-b border-border relative z-50">
-                <button
-                    className="p-2 -ml-2"
-                    onClick={() => setIsMobileMenuOpen(true)}
+                {/* ==============================================
+                    A. MOBILE NODE (<md)
+                    ============================================== */}
+                <div 
+                    className={`flex md:hidden w-full h-20 px-4 items-center justify-between transition-all duration-300 relative z-50 text-foreground ${
+                        isScrolled 
+                            ? "bg-background/95 backdrop-blur border-b border-border" 
+                            : "bg-background border-b border-border"
+                    }`}
                 >
-                    <Menu className="w-6 h-6" />
-                </button>
+                    <button
+                        className="p-2 -ml-2"
+                        onClick={() => setIsMobileMenuOpen(true)}
+                        aria-label="Open menu"
+                    >
+                        <Menu className="w-6 h-6" />
+                    </button>
 
-                <Link href="/" className="font-bold text-xl uppercase tracking-tight">
-                    THRIFTY.COM
-                </Link>
-
-                <div className="flex gap-2">
-                    <button className="p-2"><Search className="w-5 h-5" /></button>
-                    <Link href="/cart" className="p-2 -mr-2"><ShoppingCart className="w-5 h-5" /></Link>
-                </div>
-            </div>
-
-            {/* ==============================================
-                B. DESKTOP NODE (>=md)
-                ============================================== */}
-            <div className="hidden md:flex max-w-[1440px] mx-auto px-12 h-24 items-center justify-between text-white">
-                <div className="flex shrink-0 items-center">
-                    <Link href="/" className="font-bold text-2xl uppercase tracking-tight">
+                    <Link href="/" className="font-bold text-xl uppercase tracking-tight">
                         THRIFTY.COM
                     </Link>
+
+                    <div className="flex gap-2">
+                        <button 
+                            className="p-2" 
+                            onClick={() => setIsSearchOpen(!isSearchOpen)}
+                            aria-label="Toggle search"
+                        >
+                            {isSearchOpen ? <X className="w-5 h-5" /> : <Search className="w-5 h-5" />}
+                        </button>
+                        <Link href="/cart" className="p-2 -mr-2"><ShoppingCart className="w-5 h-5" /></Link>
+                    </div>
                 </div>
 
-                <nav className="flex items-center gap-10 text-sm font-medium absolute left-1/2 -translate-x-1/2">
-                    {["Men", "Women", "Accessories", "Collections"].map((item) => (
-                        <Link key={item} href={`/${item.toLowerCase()}`} className="group relative">
-                            <span className="text-white/90 hover:text-white transition-colors">{item}</span>
-                            <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-white transition-all duration-300 group-hover:w-full"></span>
-                        </Link>
-                    ))}
-                </nav>
+                {/* ==============================================
+                    B. DESKTOP NODE (>=md)
+                    ============================================== */}
+                <div 
+                    className={`hidden md:block w-full transition-all duration-300 ${
+                        isScrolled 
+                            ? "bg-background/95 backdrop-blur border-b border-border text-foreground shadow-sm" 
+                            : "bg-transparent text-white border-transparent"
+                    }`}
+                >
+                    <div className="flex max-w-[1440px] mx-auto px-12 h-24 items-center justify-between relative">
+                        <div className="flex shrink-0 items-center">
+                            <Link href="/" className="font-bold text-2xl uppercase tracking-tight">
+                                THRIFTY.COM
+                            </Link>
+                        </div>
 
-                <div className="flex items-center gap-6 text-sm font-medium text-white/90">
-                    <Link href="/login" className="hover:text-white transition-colors">Login</Link>
-                    <div className="h-3 w-[1px] bg-white/40"></div>
-                    <Link href="/help" className="hover:text-white transition-colors">Help</Link>
-                    <div className="h-3 w-[1px] bg-white/40"></div>
-                    <Link href="/contact" className="hover:text-white transition-colors">Contact Us</Link>
-                    <Link href="/cart" className="hover:text-white transition-colors ml-2">
-                        <ShoppingCart className="w-5 h-5" />
-                    </Link>
+                        <nav className="flex items-center gap-10 text-sm font-medium absolute left-1/2 -translate-x-1/2">
+                            {["Men", "Women", "Accessories", "Collections"].map((item) => (
+                                <Link key={item} href={`/${item.toLowerCase()}`} className="group relative">
+                                    <span className={`transition-colors ${isScrolled ? "text-foreground/90 hover:text-foreground" : "text-white/90 hover:text-white"}`}>{item}</span>
+                                    <span className={`absolute -bottom-1 left-0 w-0 h-px transition-all duration-300 group-hover:w-full ${isScrolled ? "bg-foreground" : "bg-white"}`}></span>
+                                </Link>
+                            ))}
+                        </nav>
+
+                        <div className={`flex items-center gap-6 text-sm font-medium transition-colors ${isScrolled ? "text-foreground/90" : "text-white/90"}`}>
+                            <Link href="/login" className={`transition-colors ${isScrolled ? "hover:text-foreground" : "hover:text-white"}`}>Login</Link>
+                            <div className={`h-3 w-px transition-colors ${isScrolled ? "bg-border" : "bg-white/40"}`}></div>
+                            <Link href="/help" className={`transition-colors ${isScrolled ? "hover:text-foreground" : "hover:text-white"}`}>Help</Link>
+                            <div className={`h-3 w-px transition-colors ${isScrolled ? "bg-border" : "bg-white/40"}`}></div>
+                            <Link href="/contact" className={`transition-colors ${isScrolled ? "hover:text-foreground" : "hover:text-white"}`}>Contact Us</Link>
+                            
+                            <button 
+                                className={`ml-2 transition-colors ${isScrolled ? "hover:text-foreground" : "hover:text-white"}`}
+                                onClick={() => setIsSearchOpen(!isSearchOpen)}
+                                aria-label="Toggle search"
+                            >
+                                {isSearchOpen ? <X className="w-5 h-5" /> : <Search className="w-5 h-5" />}
+                            </button>
+
+                            <Link href="/cart" className={`transition-colors ${isScrolled ? "hover:text-foreground" : "hover:text-white"}`}>
+                                <ShoppingCart className="w-5 h-5" />
+                            </Link>
+                        </div>
+                    </div>
                 </div>
-            </div>
+
+                {/* ==============================================
+                    SEARCH DROPDOWN
+                    ============================================== */}
+                <div className={`w-full overflow-hidden transition-all duration-300 ${
+                    isSearchOpen 
+                        ? "max-h-32 py-6 opacity-100 bg-background text-foreground border-b border-border shadow-md" 
+                        : "max-h-0 py-0 opacity-0"
+                }`}>
+                    <div className="max-w-[1440px] mx-auto px-4 md:px-12 flex justify-center">
+                        <form onSubmit={handleSearchSubmit} className="relative w-full max-w-2xl">
+                            <input
+                                type="text"
+                                placeholder="Search products, brands, or categories..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full bg-muted/50 border border-border rounded-full px-6 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/20 transition-all pr-12 text-foreground"
+                            />
+                            <button 
+                                type="submit" 
+                                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-foreground/70 hover:text-foreground transition-colors"
+                                aria-label="Submit search"
+                            >
+                                <ArrowRight className="w-5 h-5" />
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+            </SlideDownHeader>
 
             {/* ==============================================
-                C. MOBILE DRAWER UI
+                C. MOBILE DRAWER UI (Moved outside SlideDownHeader)
                 ============================================== */}
             {/* 1. The Backdrop Overlay */}
             <div
-                className={`fixed inset-0 bg-black/60 z-[200] transition-opacity duration-300 md:hidden ${isMobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-                    }`}
+                className={`fixed inset-0 bg-black/60 z-[200] transition-opacity duration-300 md:hidden ${
+                    isMobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+                }`}
                 onClick={() => setIsMobileMenuOpen(false)}
                 aria-hidden="true"
             />
 
             {/* 2. The Sliding Panel */}
             <div
-                className={`fixed top-0 left-0 h-full w-[85vw] sm:w-[350px] bg-background z-[210] transform transition-transform duration-300 ease-in-out md:hidden flex flex-col shadow-2xl ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-                    }`}
+                className={`fixed top-0 left-0 h-full w-[85vw] sm:w-[350px] bg-background z-[210] transform transition-transform duration-300 ease-in-out md:hidden flex flex-col shadow-2xl ${
+                    isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+                }`}
             >
                 {/* Drawer Header */}
                 <div className="h-20 px-6 flex items-center justify-between border-b border-border/50">
@@ -94,6 +185,7 @@ export default function Navbar() {
                     <button
                         onClick={() => setIsMobileMenuOpen(false)}
                         className="p-2 -mr-2 text-foreground/70 hover:text-foreground transition-colors"
+                        aria-label="Close menu"
                     >
                         <X className="w-6 h-6" />
                     </button>
@@ -126,7 +218,6 @@ export default function Navbar() {
                     </Link>
                 </div>
             </div>
-
-        </SlideDownHeader>
+        </>
     );
 }

@@ -6,7 +6,7 @@ export default function ProductCard({ image, title, category, price, id }) {
     return (
         <Link href={`/product/${id}`} className="group flex flex-col gap-2 cursor-pointer">
             {/* MACRO: Aspect ratio locked to 4/5 for clothing photography */}
-            <div className="relative w-full aspect-[4/5] bg-card overflow-hidden rounded-sm">
+            <div className="relative w-full aspect-4/5 bg-card overflow-hidden rounded-sm">
                 <div className={styles.imageWrapper}>
                     <Image
                         src={image}
@@ -14,6 +14,9 @@ export default function ProductCard({ image, title, category, price, id }) {
                         fill
                         sizes="(max-width: 768px) 50vw, 33vw"
                         className="object-cover object-center"
+                        loading="lazy"
+                        decoding="async" /* CRITICAL: Decodes off the main thread to prevent scroll hitches */
+                        quality={80} /* Drops payload size slightly for massive performance gains */
                     />
                 </div>
             </div>

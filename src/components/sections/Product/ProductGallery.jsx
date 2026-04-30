@@ -1,6 +1,6 @@
 export default function ProductGallery() {
     return (
-        <div className="flex flex-col md:flex-row gap-4 w-full h-auto md:aspect-[4/3]">
+        <div className="flex flex-col md:flex-row gap-4 w-full h-auto md:aspect-4/3">
 
             {/* THUMBNAILS (Left side on desktop) */}
             <div className="flex flex-row md:flex-col gap-4 w-full md:w-1/5 order-2 md:order-1 h-full">

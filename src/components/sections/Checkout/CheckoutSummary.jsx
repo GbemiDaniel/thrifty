@@ -8,8 +8,8 @@ export default function CheckoutSummary() {
             <div className="flex flex-col gap-4 mb-6 border-b border-gray-200 pb-6">
                 {[1, 2].map((item) => (
                     <div key={item} className="flex gap-4 items-center">
-                        <div className="w-16 h-16 bg-[#dcdcdc] rounded-sm flex-shrink-0" />
-                        <div className="flex flex-col flex-grow">
+                        <div className="w-16 h-16 bg-[#dcdcdc] rounded-sm shrink-0" />
+                        <div className="flex flex-col grow">
                             <span className="text-sm font-bold text-black">Gradient Graphic T-shirt</span>
                             <span className="text-xs text-gray-500">Size: L | Qty: 1</span>
                         </div>

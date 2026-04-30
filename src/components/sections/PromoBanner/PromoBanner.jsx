@@ -50,7 +50,7 @@ export default function PromoBanner() {
                         - Mobile: Gradual fade (to-100%) to smoothly mask the image edge under the text.
                         - Desktop: Tight fade (to-60%) to preserve image quality on the right side.
                     */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-muted from-0% via-muted/80 via-50% to-transparent to-100% md:via-muted/50 md:via-25% md:to-60% z-10" />
+                    <div className="absolute inset-0 bg-linear-to-r from-muted from-0% via-muted/80 via-50% to-transparent to-100% md:via-muted/50 md:via-25% md:to-60% z-10" />
 
                     <Image
                         src="/images/banner image.jpg"

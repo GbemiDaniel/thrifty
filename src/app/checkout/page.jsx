@@ -28,7 +28,7 @@ export default function CheckoutPage() {
                 <div className="flex flex-col lg:flex-row justify-center gap-10 lg:gap-16">
 
                     {/* Left: Input. Constrained to 650px maximum. Forms shouldn't stretch forever. */}
-                    <div className="w-full w-full lg:max-w-[650px]">
+                    <div className="w-full lg:max-w-[650px]">
                         {/* Added a white bounding box and shadow around the form */}
                         <div className="bg-white p-6 md:p-10 rounded-md border border-gray-200 shadow-sm">
                             <CheckoutForm />

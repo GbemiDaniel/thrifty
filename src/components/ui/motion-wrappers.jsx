@@ -25,12 +25,13 @@ const fadeUpVariants = {
 /* =========================================
    2. REUSABLE WRAPPERS (The Components)
    ========================================= */
-
+// Update this specific export in your motion-wrappers.jsx
 export function StaggerContainer({ children, className = "" }) {
     return (
         <motion.div
             initial="hidden"
-            animate="visible"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }} // Triggers when 10% visible
             variants={staggerVariants}
             className={className}
         >

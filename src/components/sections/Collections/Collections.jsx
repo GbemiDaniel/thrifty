@@ -22,7 +22,7 @@ export default function Collections() {
 
                 {/* Node 1: Women's Image (Top Left on Desktop, Top on Mobile) */}
                 <ScrollReveal delay={0.1} className="h-full w-full block order-1">
-                    <div className="relative w-full aspect-[4/5] md:aspect-[5/4] overflow-hidden group">
+                    <div className="relative w-full aspect-4/5 md:aspect-5/4 overflow-hidden group">
                         <Image
                             src="/images/collection-woman.jpg"
                             alt="Women's Collection"
@@ -35,7 +35,7 @@ export default function Collections() {
 
                 {/* Node 2: Gray Text Block (Top Right on Desktop, 2nd on Mobile) */}
                 <ScrollReveal delay={0.2} className="h-full w-full block order-2">
-                    <div className="w-full aspect-[4/5] md:aspect-[5/4] bg-border flex flex-col items-start justify-center p-8 sm:p-12 md:p-16">
+                    <div className="w-full aspect-4/5 md:aspect-5/4 bg-border flex flex-col items-start justify-center p-8 sm:p-12 md:p-16">
                         <h3 className="text-3xl md:text-4xl lg:text-5xl font-medium text-foreground tracking-tight leading-tight mb-6 md:mb-8">
                             Built by the street,<br />Made for you
                         </h3>
@@ -51,7 +51,7 @@ export default function Collections() {
 
                 {/* Node 3: Men's Image (Bottom Right on Desktop, 3rd on Mobile) */}
                 <ScrollReveal delay={0.3} className="h-full w-full block order-3 md:order-4">
-                    <div className="relative w-full aspect-[4/5] md:aspect-[5/4] overflow-hidden group">
+                    <div className="relative w-full aspect-4/5 md:aspect-5/4 overflow-hidden group">
                         <Image
                             src="/images/collection-man.jpg"
                             alt="Men's Collection"
@@ -64,7 +64,7 @@ export default function Collections() {
 
                 {/* Node 4: Black Text Block (Bottom Left on Desktop, 4th on Mobile) */}
                 <ScrollReveal delay={0.4} className="h-full w-full block order-4 md:order-3">
-                    <div className="w-full aspect-[4/5] md:aspect-[5/4] bg-foreground flex flex-col items-start justify-center p-8 sm:p-12 md:p-16">
+                    <div className="w-full aspect-4/5 md:aspect-5/4 bg-foreground flex flex-col items-start justify-center p-8 sm:p-12 md:p-16">
                         <h3 className="text-3xl md:text-4xl lg:text-5xl font-medium text-background tracking-tight leading-tight mb-6 md:mb-8">
                             Elevate your style<br />Effortlessly
                         </h3>

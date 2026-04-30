@@ -19,7 +19,7 @@ export default function RecommendationGrid({ title, showButton = false }) {
                     <Link href={`/product/${item}`} key={item} className="flex flex-col group cursor-pointer">
 
                         {/* Image Container */}
-                        <div className="relative w-full aspect-[4/5] bg-[#f5f5f5] rounded-sm overflow-hidden mb-3 md:mb-4">
+                        <div className="relative w-full aspect-4/5 bg-[#f5f5f5] rounded-sm overflow-hidden mb-3 md:mb-4">
                             <Image
                                 src="/images/product-1.jpg" // Our standard global placeholder
                                 alt="Product Recommendation"

@@ -32,7 +32,7 @@ export default function CategoryBento() {
         <section className="w-full px-sm md:px-md py-lg md:py-section">
 
             {/* MACRO: The Grid Architecture */}
-            <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 h-auto md:aspect-[2/1] lg:aspect-[21/9]">
+            <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 h-auto md:aspect-2/1 lg:aspect-21/9">
 
                 {/* Block A: Men */}
                 {/* 2. Added h-full w-full to the ScrollReveal className so the observer box spans the grid cell */}

@@ -14,8 +14,8 @@ export default function HeroSection() {
     const plugin = React.useRef(
         Autoplay({
             delay: 5000,
-            stopOnInteraction: false,
-            stopOnMouseEnter: false
+            stopOnInteraction: true, // Native UX: If a user touches it, respect their intent and pause.
+            stopOnMouseEnter: true
         })
     );
 
@@ -36,77 +36,89 @@ export default function HeroSection() {
                 opts={{ loop: true, align: "start" }}
                 setApi={setApi}
                 plugins={[plugin.current]}
-                className="w-full h-[65vh] md:h-[100vh] min-h-[450px] md:min-h-[500px] max-h-[850px] [&>div:first-child]:h-full"
+                className="w-full h-[65vh] md:h-screen min-h-[450px] md:min-h-[500px] max-h-[850px] [&>div:first-child]:h-full"
             >
                 <CarouselContent className="h-full ml-0">
-                    {heroSlides.map((slide, index) => (
-                        <CarouselItem key={slide.id} className="relative h-full w-full pl-0">
+                    {heroSlides.map((slide, index) => {
+                        const isFirst = index === 0;
 
-                            {/* ==============================================
-                                A. MOBILE WRAPPER (<md)
-                                ============================================== */}
-                            <div className="block md:hidden relative w-full h-full">
-                                <Image
-                                    src={slide.image}
-                                    alt={slide.title}
-                                    fill
-                                    className="object-cover object-center"
-                                    priority={index === 0}
-                                    sizes="100vw"
-                                />
+                        return (
+                            // select-none stops text highlighting during drag
+                            <CarouselItem key={slide.id} className="relative h-full w-full pl-0 select-none">
 
-                                {/* Swiping Ghost Gradients */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent pointer-events-none" />
+                                {/* 
+                                    THE FIX: ONE single optimized image layer. 
+                                    No more double-mounting for desktop/mobile.
+                                */}
+                                <div className="absolute inset-0 w-full h-full">
+                                    <Image
+                                        src={slide.image}
+                                        alt={slide.title}
+                                        fill
+                                        draggable={false} // Stops native drag-and-drop ghosting
+                                        className="object-cover object-center"
+                                        priority={isFirst}
+                                        loading={isFirst ? "eager" : "lazy"}
+                                        decoding={isFirst ? "sync" : "async"}
+                                        sizes="100vw"
+                                        quality={85}
+                                    />
+                                </div>
 
-                                <div className="absolute inset-0 flex flex-col justify-end p-5 pb-16 z-20 text-white pointer-events-none">
-                                    <h1 className="text-sm sm:text-base font-medium tracking-wide mb-1.5 whitespace-nowrap">
+                                {/* ==============================================
+                                    A. MOBILE OVERLAY (<md)
+                                    ============================================== */}
+                                <div className="absolute inset-0 flex md:hidden flex-col justify-end p-5 pb-16 z-20">
+                                    {/* Fixed Gradient */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent -z-10" />
+
+                                    <h1 className="text-sm sm:text-base font-medium tracking-wide mb-1.5 whitespace-nowrap text-white">
                                         {slide.title}
                                     </h1>
-                                    <Link href={slide.href} className="group w-max flex items-center gap-2 text-[11px] font-medium text-white/90 hover:text-white transition-colors pointer-events-auto">
-                                        <span className="relative pb-0.5 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[1px] after:bg-white after:transition-all after:duration-300 group-hover:after:w-full">
+                                    <Link
+                                        href={slide.href}
+                                        draggable={false}
+                                        className="group w-max flex items-center gap-2 text-[11px] font-medium text-white/90 hover:text-white transition-colors"
+                                    >
+                                        <span className="relative pb-0.5 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-px after:bg-white after:transition-all after:duration-300 group-hover:after:w-full">
                                             {slide.cta}
                                         </span>
                                         <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
                                     </Link>
                                 </div>
-                            </div>
 
-                            {/* ==============================================
-                                B. DESKTOP WRAPPER (>=md)
-                                ============================================== */}
-                            <div className="hidden md:block relative w-full h-full">
-                                <Image
-                                    src={slide.image}
-                                    alt={slide.title}
-                                    fill
-                                    className="object-cover object-center"
-                                    priority={index === 0}
-                                    sizes="100vw"
-                                />
+                                {/* ==============================================
+                                    B. DESKTOP OVERLAY (>=md)
+                                    ============================================== */}
+                                <div className="absolute inset-0 hidden md:flex flex-col z-20">
+                                    {/* Fixed Gradients */}
+                                    <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-black/50 to-transparent -z-10" />
+                                    <div className="absolute bottom-0 left-0 w-full h-48 bg-gradient-to-t from-black/70 to-transparent -z-10" />
 
-                                <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-black/30 to-transparent z-10 pointer-events-none" />
-                                <div className="absolute bottom-0 left-0 w-full h-48 bg-gradient-to-t from-black/40 to-transparent z-10 pointer-events-none" />
-
-                                <div className="absolute bottom-16 left-12 lg:left-24 z-20 text-white pointer-events-none">
-                                    <h1 className="text-lg lg:text-xl font-medium tracking-wide mb-3 whitespace-nowrap">
-                                        {slide.title}
-                                    </h1>
-
-                                    <Link href={slide.href} className="group w-max flex items-center gap-2 text-sm font-medium text-white/90 hover:text-white transition-colors pointer-events-auto">
-                                        <span className="relative pb-0.5 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[1px] after:bg-white after:transition-all after:duration-300 group-hover:after:w-full">
-                                            {slide.cta}
-                                        </span>
-                                        <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
-                                    </Link>
+                                    <div className="absolute bottom-16 left-12 lg:left-24 text-white">
+                                        <h1 className="text-lg lg:text-xl font-medium tracking-wide mb-3 whitespace-nowrap">
+                                            {slide.title}
+                                        </h1>
+                                        <Link
+                                            href={slide.href}
+                                            draggable={false}
+                                            className="group w-max flex items-center gap-2 text-sm font-medium text-white/90 hover:text-white transition-colors"
+                                        >
+                                            <span className="relative pb-0.5 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-px after:bg-white after:transition-all after:duration-300 group-hover:after:w-full">
+                                                {slide.cta}
+                                            </span>
+                                            <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+                                        </Link>
+                                    </div>
                                 </div>
-                            </div>
 
-                        </CarouselItem>
-                    ))}
+                            </CarouselItem>
+                        );
+                    })}
                 </CarouselContent>
 
                 {/* Mobile Pagination: 3-Dot Track Logic */}
-                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[100] flex md:hidden items-center justify-center gap-1.5 pointer-events-none">
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[100] flex md:hidden items-center justify-center gap-1.5">
                     {[0, 1, 2].map((dotIndex) => {
                         const isActive =
                             (dotIndex === 0 && current === 0) ||
@@ -120,8 +132,8 @@ export default function HeroSection() {
                                 key={dotIndex}
                                 onClick={() => api?.scrollTo(scrollToIndex)}
                                 className={isActive
-                                    ? "w-2 h-2 bg-white rounded-full pointer-events-auto"
-                                    : "w-1.5 h-1.5 bg-white/40 hover:bg-white/70 rounded-full transition-all duration-300 pointer-events-auto"
+                                    ? "w-2 h-2 bg-white rounded-full"
+                                    : "w-1.5 h-1.5 bg-white/40 hover:bg-white/70 rounded-full transition-all duration-300"
                                 }
                                 aria-label={`Go to section ${dotIndex + 1}`}
                             />

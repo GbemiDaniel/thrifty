@@ -24,7 +24,7 @@ export default function DeliveryReturns() {
 
                 {/* 1. Pickup Station */}
                 <div className="flex gap-4">
-                    <div className="mt-1 flex-shrink-0 text-gray-600">
+                    <div className="mt-1 shrink-0 text-gray-600">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                             <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
                             <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
@@ -40,7 +40,7 @@ export default function DeliveryReturns() {
 
                 {/* 2. Door Delivery */}
                 <div className="flex gap-4 border-t border-gray-100 pt-6">
-                    <div className="mt-1 flex-shrink-0 text-gray-600">
+                    <div className="mt-1 shrink-0 text-gray-600">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                             <rect x="1" y="3" width="15" height="13" />
                             <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
@@ -57,7 +57,7 @@ export default function DeliveryReturns() {
 
                 {/* 3. Return Policy */}
                 <div className="flex gap-4 border-t border-gray-100 pt-6">
-                    <div className="mt-1 flex-shrink-0 text-gray-600">
+                    <div className="mt-1 shrink-0 text-gray-600">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                             <polyline points="1 4 1 10 7 10" />
                             <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
