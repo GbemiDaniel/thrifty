@@ -1,45 +1,44 @@
 "use client";
 import { useState } from "react";
-import { useCartStore } from "@/store/cartStore"; // 1. Import the Brain
+import { useCartStore } from "@/store/cartStore";
 
-export default function ProductActions() {
-    const [selectedColor, setSelectedColor] = useState("brown");
-    const [selectedSize, setSelectedSize] = useState("Large");
+export default function ProductActions({ product }) {
+    if (!product) return null;
+
+    const [selectedColor, setSelectedColor] = useState(product.colors[0]?.name || "");
+    const [selectedSize, setSelectedSize] = useState(product.sizes[0] || "");
     const [quantity, setQuantity] = useState(1);
 
-    // 2. Hook into the Store
+    // UX State for the button
+    const [isAdded, setIsAdded] = useState(false);
+
     const addItem = useCartStore((state) => state.addItem);
+    const numericPrice = parseFloat(product.price.replace(/[^0-9.]/g, ''));
 
-    const colors = [
-        { id: "brown", hex: "#5C4033" },
-        { id: "green", hex: "#1A4331" },
-        { id: "navy", hex: "#1C2331" }
-    ];
-
-    const sizes = ["Small", "Medium", "Large", "X-Large"];
-
-    // 3. The Dispatch Function
     const handleAddToCart = () => {
         const newItem = {
-            id: "nike-sweatshirt-001", // Hardcoded ID since there's no DB
-            name: "NIKE SWEATSHIRT",
-            price: 260,
-            image: "/images/Product-1.jpg", // Placeholder image reference for the cart
+            id: product.id,
+            name: product.title,
+            price: numericPrice,
+            // Fallback just in case the catalog uses 'images' array instead of 'image' string
+            image: product.images?.[0] || product.image,
             color: selectedColor,
             size: selectedSize,
             quantity: quantity,
         };
 
         addItem(newItem);
-        console.log("Vault updated:", newItem); // Temporary proof of life
+
+        // Visual feedback
+        setIsAdded(true);
+        setTimeout(() => setIsAdded(false), 2000);
     };
 
     return (
         <div className="flex flex-col w-full text-foreground">
 
-            {/* Title & Reviews */}
             <h1 className="text-3xl md:text-4xl font-bold uppercase tracking-tight mb-3">
-                NIKE SWEATSHIRT
+                {product.title}
             </h1>
 
             <div className="flex items-center gap-2 mb-6">
@@ -47,18 +46,12 @@ export default function ProductActions() {
                 <span className="text-sm font-medium text-muted-foreground">4.5/5</span>
             </div>
 
-            {/* Pricing Block */}
             <div className="flex items-center gap-4 mb-4">
-                <span className="text-3xl font-bold">$260</span>
-                <span className="text-2xl font-medium text-muted-foreground line-through">$300</span>
-                <span className="bg-sale/10 text-sale text-xs font-bold px-2 py-1 rounded-sm">
-                    -40%
-                </span>
+                <span className="text-3xl font-bold">{product.price}</span>
             </div>
 
-            {/* Description */}
             <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-                This graphic t-shirt which is perfect for any occasion. Crafted from a soft and breathable fabric, it offers superior comfort and style.
+                {product.description}
             </p>
 
             <hr className="border-border mb-6" />
@@ -67,15 +60,16 @@ export default function ProductActions() {
             <div className="mb-6">
                 <span className="block text-sm font-medium text-foreground mb-3">Select Colors</span>
                 <div className="flex gap-3">
-                    {colors.map((color) => (
+                    {product.colors.map((color) => (
                         <button
-                            key={color.id}
-                            onClick={() => setSelectedColor(color.id)}
-                            className="w-8 h-8 rounded-full flex items-center justify-center transition-transform hover:scale-110"
+                            key={color.name}
+                            onClick={() => setSelectedColor(color.name)}
+                            className="w-8 h-8 rounded-full flex items-center justify-center transition-transform hover:scale-110 border border-border"
                             style={{ backgroundColor: color.hex }}
+                            title={color.name}
                         >
-                            {selectedColor === color.id && (
-                                <span className="text-background text-xs">✓</span>
+                            {selectedColor === color.name && (
+                                <span className="text-background text-xs drop-shadow-md">✓</span>
                             )}
                         </button>
                     ))}
@@ -88,13 +82,13 @@ export default function ProductActions() {
             <div className="mb-8">
                 <span className="block text-sm font-medium text-foreground mb-3">Choose Size</span>
                 <div className="flex flex-wrap gap-3">
-                    {sizes.map((size) => (
+                    {product.sizes.map((size) => (
                         <button
                             key={size}
                             onClick={() => setSelectedSize(size)}
-                            className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${selectedSize === size
-                                ? "bg-foreground text-background"
-                                : "bg-muted text-muted-foreground hover:bg-border"
+                            className={`px-5 py-2 rounded-full text-sm font-medium transition-colors border ${selectedSize === size
+                                ? "bg-foreground text-background border-foreground"
+                                : "bg-muted text-muted-foreground border-border hover:bg-border"
                                 }`}
                         >
                             {size}
@@ -105,19 +99,21 @@ export default function ProductActions() {
 
             {/* Actions Row */}
             <div className="flex gap-4 w-full">
-                {/* Local Quantity Control */}
-                <div className="flex items-center justify-between bg-muted rounded-full w-32 h-12 px-4">
-                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="text-xl text-muted-foreground">−</button>
+                <div className="flex items-center justify-between bg-muted rounded-full w-32 h-12 px-4 border border-border">
+                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="text-xl text-muted-foreground hover:text-foreground transition-colors">−</button>
                     <span className="text-sm font-bold">{quantity}</span>
-                    <button onClick={() => setQuantity(quantity + 1)} className="text-xl text-muted-foreground">+</button>
+                    <button onClick={() => setQuantity(quantity + 1)} className="text-xl text-muted-foreground hover:text-foreground transition-colors">+</button>
                 </div>
 
-                {/* 4. The Trigger */}
                 <button
                     onClick={handleAddToCart}
-                    className="flex-1 bg-foreground text-background rounded-full text-sm font-bold tracking-wide h-12 hover:bg-foreground/80 transition-colors"
+                    disabled={isAdded}
+                    className={`flex-1 rounded-full text-sm font-bold tracking-wide h-12 transition-all duration-300 ${isAdded
+                            ? "bg-green-600 text-white"
+                            : "bg-foreground text-background hover:bg-foreground/80"
+                        }`}
                 >
-                    Add to Cart
+                    {isAdded ? "✓ Added to Cart" : "Add to Cart"}
                 </button>
             </div>
 

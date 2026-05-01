@@ -41,7 +41,7 @@ export default function Collections() {
                         </h3>
                         {/* Upgraded CTA: Contextual text + sliding arrow */}
                         <Link
-                            href="/collections/women"
+                            href="/women"
                             className="group border border-foreground text-foreground px-6 py-3 text-sm hover:bg-foreground hover:text-background transition-all duration-300 flex items-center gap-2"
                         >
                             Explore Women's <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
@@ -70,7 +70,7 @@ export default function Collections() {
                         </h3>
                         {/* Upgraded CTA: Contextual text + sliding arrow */}
                         <Link
-                            href="/collections/men"
+                            href="/men"
                             className="group border border-background text-background px-6 py-3 text-sm hover:bg-background hover:text-foreground transition-all duration-300 flex items-center gap-2"
                         >
                             Shop Men's <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
@@ -82,9 +82,9 @@ export default function Collections() {
 
             {/* Global Action */}
             <ScrollReveal delay={0.5}>
-                <button className="bg-foreground text-background px-12 py-3.5 text-sm font-medium hover:opacity-80 transition-opacity">
+                <Link href="#" className="inline-block text-center bg-foreground text-background px-12 py-3.5 text-sm font-medium hover:opacity-80 transition-opacity">
                     View All Collections
-                </button>
+                </Link>
             </ScrollReveal>
 
         </section>

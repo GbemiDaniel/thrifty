@@ -4,6 +4,7 @@ import { AnimatePresence } from "framer-motion";
 import ProductCard from "@/components/shared/ProductCard/ProductCard";
 import { ScrollReveal, StaggerContainer, FadeUp } from "@/components/ui/motion-wrappers";
 import { hotDealsData } from "@/lib/constants";
+import Link from "next/link";
 
 export default function HotDeals() {
     const [activeTab, setActiveTab] = useState("men");
@@ -70,9 +71,9 @@ export default function HotDeals() {
 
             {/* Action Button */}
             <ScrollReveal delay={0.3} className="w-full mt-10 md:mt-14 flex justify-center">
-                <button className="w-full md:w-64 bg-foreground text-background py-4 text-sm font-medium hover:opacity-80 transition-opacity tracking-wide">
+                <Link href={`/${activeTab}`} className="w-full md:w-64 bg-foreground text-background py-4 text-sm font-medium hover:opacity-80 transition-opacity tracking-wide text-center block">
                     View All
-                </button>
+                </Link>
             </ScrollReveal>
 
         </section>

@@ -1,46 +1,53 @@
+"use client";
+import Link from "next/link";
 import ProductNavbar from "@/components/sections/Product/ProductNavbar";
 import CartItems from "@/components/sections/Cart/CartItems";
 import OrderSummary from "@/components/sections/Cart/OrderSummary";
-import Link from "next/link";
+import { useCartStore } from "@/store/cartStore";
 
 export default function CartPage() {
+    const items = useCartStore((state) => state.items);
+    const getCartCount = useCartStore((state) => state.getCartCount);
+
+    const cartCount = getCartCount();
+
     return (
         <div className="w-full min-h-screen bg-white pb-24">
-            {/* 1. Header */}
             <ProductNavbar />
 
             <main className="max-w-[1440px] mx-auto px-6 md:px-12 pt-6">
-
-                {/* 2. Breadcrumbs */}
                 <nav className="text-xs font-medium text-gray-500 flex items-center gap-2 mb-8">
                     <Link href="/" className="hover:text-black transition-colors">Home</Link>
                     <span>&gt;</span>
-                    <span className="text-black">Men</span>
+                    <span className="text-black">Your Cart</span>
                 </nav>
 
-                {/* 3. Page Title */}
                 <h1 className="text-3xl md:text-4xl font-bold uppercase tracking-tight text-black mb-8">
-                    YOUR CART
+                    Cart {cartCount > 0 ? `(${cartCount})` : ""}
                 </h1>
 
-                {/* 4. The 60/40 Split */}
-                <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 relative">
-
-                    {/* Left Column: Cart Items (Takes up roughly 60%) */}
-                    <div className="w-full lg:w-[60%]">
-                        <CartItems />
-                    </div>
-
-                    {/* Right Column: Order Summary (Takes up roughly 40%) */}
-                    <div className="w-full lg:w-[40%]">
-                        {/* The sticky top-24 ensures the summary follows the user if they have 20 items in their cart */}
-                        <div className="sticky top-24">
-                            <OrderSummary />
+                {items.length > 0 ? (
+                    <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 relative">
+                        <div className="w-full lg:w-[60%]">
+                            <CartItems />
+                        </div>
+                        <div className="w-full lg:w-[40%]">
+                            <div className="sticky top-24">
+                                <OrderSummary />
+                            </div>
                         </div>
                     </div>
-
-                </div>
-
+                ) : (
+                    <div className="flex flex-col items-center justify-center py-24 text-center border-t border-gray-100">
+                        <p className="text-xl text-gray-500 mb-8">Your cart is currently empty.</p>
+                        <Link
+                            href="/"
+                            className="bg-black text-white px-8 py-4 rounded-full text-sm font-bold uppercase tracking-wide hover:bg-gray-800 transition-colors"
+                        >
+                            Continue Shopping
+                        </Link>
+                    </div>
+                )}
             </main>
         </div>
     );

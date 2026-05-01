@@ -7,6 +7,10 @@ export const useCartStore = create(
             // The Master Array
             items: [],
 
+            // Dynamic Getters
+            getCartCount: () => get().items.reduce((total, item) => total + item.quantity, 0),
+            getCartTotal: () => get().items.reduce((total, item) => total + (item.price * item.quantity), 0),
+
             // 1. ADD ITEM
             addItem: (newItem) => {
                 const currentItems = get().items;

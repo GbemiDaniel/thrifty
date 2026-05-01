@@ -25,7 +25,7 @@ export default function Footer() {
                             <Link href="/men" className={linkClass}>Men</Link>
                             <Link href="/women" className={linkClass}>Women</Link>
                             <Link href="/accessories" className={linkClass}>Accessories</Link>
-                            <Link href="/collections" className={linkClass}>Collections</Link>
+                            <Link href="#" className={linkClass}>Collections</Link>
                         </nav>
                     </ScrollReveal>
 
@@ -42,9 +42,9 @@ export default function Footer() {
 
                         {/* Legal Links - Stacked on mobile, horizontal on desktop */}
                         <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8 order-1 md:order-2">
-                            <Link href="/privacy" className={linkClass}>Privacy Policy</Link>
-                            <Link href="/terms" className={linkClass}>Terms of Service</Link>
-                            <Link href="/cookies" className={linkClass}>Cookies Settings</Link>
+                            <Link href="/help" className={linkClass}>Help & FAQ</Link>
+                            <Link href="/contact" className={linkClass}>Contact Us</Link>
+                            <Link href="#" className={linkClass}>Privacy Policy</Link>
                         </div>
 
                         {/* Copyright - Pushed to the bottom on mobile, left/center alongside legal on desktop */}
