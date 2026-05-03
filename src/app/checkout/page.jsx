@@ -1,8 +1,38 @@
+"use client";
 import CheckoutForm from "@/components/sections/Checkout/CheckoutForm";
 import CheckoutSummary from "@/components/sections/Checkout/CheckoutSummary";
 import Link from "next/link";
+import { useCartStore } from "@/store/cartStore";
+import { useEffect, useState } from "react";
 
 export default function CheckoutPage() {
+    const { items } = useCartStore();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) {
+        return (
+            <div className="w-full min-h-screen bg-gray-50 flex items-center justify-center">
+                <span className="text-gray-500 uppercase tracking-widest text-sm font-bold">Loading...</span>
+            </div>
+        );
+    }
+
+    if (items.length === 0) {
+        return (
+            <div className="w-full min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6 text-center">
+                <h2 className="text-3xl font-bold mb-4 text-black uppercase tracking-wide">Cart is empty</h2>
+                <p className="text-gray-500 mb-8 max-w-md">You need items in your cart to proceed to checkout. Return to the store to add items.</p>
+                <Link href="/cart" className="bg-black text-white px-8 py-4 rounded-sm text-sm font-bold uppercase tracking-widest hover:bg-black/90 transition-colors">
+                    Back to Cart
+                </Link>
+            </div>
+        );
+    }
+
     return (
         // 1. VOID FIX: Changed bg-white to bg-gray-50 to create contrast against the forms
         <div className="w-full min-h-screen bg-gray-50">

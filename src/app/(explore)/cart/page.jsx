@@ -22,8 +22,8 @@ export default function CartPage() {
                     <span className="text-black">Your Cart</span>
                 </nav>
 
-                <h1 className="text-3xl md:text-4xl font-bold uppercase tracking-tight text-black mb-8">
-                    Cart {cartCount > 0 ? `(${cartCount})` : ""}
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold uppercase tracking-tight text-foreground mb-6 md:mb-8">
+                    YOUR CART {cartCount > 0 ? `(${cartCount})` : ""}
                 </h1>
 
                 {items.length > 0 ? (

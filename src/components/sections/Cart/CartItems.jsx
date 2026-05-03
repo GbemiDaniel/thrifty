@@ -30,11 +30,8 @@ export default function CartItems() {
         );
     }
 
-    // 4. The Live Ledger
     return (
         <div className="w-full flex flex-col gap-6">
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Cart ({items.length})</h2>
-
             {items.map((item) => {
                 // We use the compound key defined in Zustand to target the exact variant
                 const variantKey = `${item.id}-${item.color}-${item.size}`;

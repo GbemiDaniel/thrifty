@@ -1,4 +1,16 @@
+"use client";
+import { useCartStore } from "@/store/cartStore";
+import Image from "next/image";
+
 export default function CheckoutSummary() {
+    // Hook into the live Zustand cart
+    const { items } = useCartStore();
+
+    // The Math Engine
+    const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const deliveryFee = subtotal > 500 ? 0 : 15;
+    const finalTotal = subtotal + deliveryFee;
+
     return (
         <div className="w-full border border-gray-200 rounded-md p-6 bg-white shadow-sm">
 
@@ -6,27 +18,39 @@ export default function CheckoutSummary() {
 
             {/* Micro Item List */}
             <div className="flex flex-col gap-4 mb-6 border-b border-gray-200 pb-6">
-                {[1, 2].map((item) => (
-                    <div key={item} className="flex gap-4 items-center">
-                        <div className="w-16 h-16 bg-[#dcdcdc] rounded-sm shrink-0" />
-                        <div className="flex flex-col grow">
-                            <span className="text-sm font-bold text-black">Gradient Graphic T-shirt</span>
-                            <span className="text-xs text-gray-500">Size: L | Qty: 1</span>
+                {items.map((item) => {
+                    const variantKey = `${item.id}-${item.color}-${item.size}`;
+                    
+                    return (
+                        <div key={variantKey} className="flex gap-4 items-center">
+                            <div className="relative w-16 h-16 bg-[#dcdcdc] rounded-sm shrink-0 overflow-hidden border border-gray-100">
+                                {item.image && (
+                                    <Image src={item.image} alt={item.name} fill className="object-cover" />
+                                )}
+                            </div>
+                            <div className="flex flex-col grow min-w-0">
+                                <span className="text-sm font-bold text-black truncate">{item.name}</span>
+                                <span className="text-xs text-gray-500 capitalize">
+                                    Size: {item.size} | Color: {item.color} | Qty: {item.quantity}
+                                </span>
+                            </div>
+                            <span className="text-sm font-bold text-black shrink-0">
+                                ${item.price * item.quantity}
+                            </span>
                         </div>
-                        <span className="text-sm font-bold text-black">$145</span>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
             {/* Math Recap */}
             <div className="flex flex-col gap-3 text-sm mb-6">
                 <div className="flex justify-between text-gray-500">
                     <span>Subtotal</span>
-                    <span className="text-black">$290</span>
+                    <span className="text-black">${subtotal}</span>
                 </div>
                 <div className="flex justify-between text-gray-500">
                     <span>Shipping</span>
-                    <span className="text-black">$15</span>
+                    <span className="text-black">{deliveryFee === 0 ? "Free" : `$${deliveryFee}`}</span>
                 </div>
             </div>
 
@@ -35,7 +59,7 @@ export default function CheckoutSummary() {
             {/* Final Total */}
             <div className="flex justify-between items-center mb-8">
                 <span className="text-base text-gray-500 uppercase tracking-wide">Total</span>
-                <span className="text-3xl font-bold text-black">$305</span>
+                <span className="text-3xl font-bold text-black">${finalTotal}</span>
             </div>
 
             {/* The Money Button */}
