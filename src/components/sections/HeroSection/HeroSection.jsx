@@ -55,13 +55,13 @@ export default function HeroSection() {
                                         src={slide.image}
                                         alt={slide.title}
                                         fill
-                                        draggable={false} // Stops native drag-and-drop ghosting
-                                        className="object-cover object-center"
+                                        draggable={false}
+                                        className="object-cover object-center bg-muted" // Added bg-muted as a skeleton loader color
                                         priority={isFirst}
-                                        loading={isFirst ? "eager" : "lazy"}
-                                        decoding={isFirst ? "sync" : "async"}
-                                        sizes="100vw"
+                                        // 1. The Performance/Quality Sweet Spot
                                         quality={85}
+                                        // 2. Standard full-width sizing. Next.js will automatically generate 1x, 2x, and 3x retina sizes based on this.
+                                        sizes="100vw"
                                     />
                                 </div>
 
@@ -95,20 +95,22 @@ export default function HeroSection() {
                                     <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-black/50 to-transparent -z-10" />
                                     <div className="absolute bottom-0 left-0 w-full h-48 bg-gradient-to-t from-black/70 to-transparent -z-10" />
 
-                                    <div className="absolute bottom-16 left-12 lg:left-24 text-white">
-                                        <h1 className="text-lg lg:text-xl font-medium tracking-wide mb-3 whitespace-nowrap">
-                                            {slide.title}
-                                        </h1>
-                                        <Link
-                                            href={slide.href}
-                                            draggable={false}
-                                            className="group w-max flex items-center gap-2 text-sm font-medium text-white/90 hover:text-white transition-colors"
-                                        >
-                                            <span className="relative pb-0.5 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-px after:bg-white after:transition-all after:duration-300 group-hover:after:w-full">
-                                                {slide.cta}
-                                            </span>
-                                            <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
-                                        </Link>
+                                    <div className="absolute bottom-16 left-0 w-full text-white">
+                                        <div className="max-w-[1440px] mx-auto px-12">
+                                            <h1 className="text-lg lg:text-xl font-medium tracking-wide mb-3 whitespace-nowrap">
+                                                {slide.title}
+                                            </h1>
+                                            <Link
+                                                href={slide.href}
+                                                draggable={false}
+                                                className="group w-max flex items-center gap-2 text-sm font-medium text-white/90 hover:text-white transition-colors"
+                                            >
+                                                <span className="relative pb-0.5 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-px after:bg-white after:transition-all after:duration-300 group-hover:after:w-full">
+                                                    {slide.cta}
+                                                </span>
+                                                <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+                                            </Link>
+                                        </div>
                                     </div>
                                 </div>
 

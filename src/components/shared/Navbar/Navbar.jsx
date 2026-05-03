@@ -13,7 +13,7 @@ export default function Navbar() {
     const [searchQuery, setSearchQuery] = useState("");
 
     const router = useRouter();
-    const pathname = usePathname(); // 1. Hook to read the current URL
+    const pathname = usePathname();
 
     // Zustand Cart Connection
     const items = useCartStore((state) => state.items);
@@ -21,9 +21,9 @@ export default function Navbar() {
     useEffect(() => setMounted(true), []);
     const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
-    // 2. THE FIX: Route-aware solid state
+    // Route-aware solid state
     const isHomePage = pathname === '/';
-    const isSolid = isScrolled || !isHomePage; // Solid if scrolled OR if not on the homepage
+    const isSolid = isScrolled || !isHomePage;
 
     // Dynamic Scroll State
     useEffect(() => {
@@ -82,7 +82,7 @@ export default function Navbar() {
                         THRIFTY.COM
                     </Link>
 
-                    <div className="flex gap-2">
+                    <div className="flex items-center gap-1">
                         <button
                             className="p-2"
                             onClick={() => setIsSearchOpen(!isSearchOpen)}
@@ -90,13 +90,17 @@ export default function Navbar() {
                         >
                             {isSearchOpen ? <X className="w-5 h-5" /> : <Search className="w-5 h-5" />}
                         </button>
-                        <Link href="/cart" className="p-2 -mr-2 relative flex items-center">
-                            <ShoppingCart className="w-5 h-5" />
-                            {mounted && totalItems > 0 && (
-                                <span className="absolute top-0 right-0 bg-sale text-background text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full -translate-y-1/2 translate-x-1/2">
-                                    {totalItems}
-                                </span>
-                            )}
+
+                        {/* THE FIX: Removed negative margin, pinned badge directly to the icon */}
+                        <Link href="/cart" className="p-2 flex items-center">
+                            <div className="relative">
+                                <ShoppingCart className="w-5 h-5" />
+                                {mounted && totalItems > 0 && (
+                                    <span className="absolute -top-2 -right-2 bg-sale text-background text-[10px] font-bold w-[18px] h-[18px] flex items-center justify-center rounded-full">
+                                        {totalItems}
+                                    </span>
+                                )}
+                            </div>
                         </Link>
                     </div>
                 </div>
