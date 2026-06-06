@@ -70,7 +70,7 @@ export default function HeroSection() {
                                     ============================================== */}
                                 <div className="absolute inset-0 flex md:hidden flex-col justify-end p-5 pb-16 z-20">
                                     {/* Fixed Gradient */}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent -z-10" />
+                                    <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent -z-10" />
 
                                     <h1 className="text-sm sm:text-base font-medium tracking-wide mb-1.5 whitespace-nowrap text-white">
                                         {slide.title}
@@ -92,8 +92,8 @@ export default function HeroSection() {
                                     ============================================== */}
                                 <div className="absolute inset-0 hidden md:flex flex-col z-20">
                                     {/* Fixed Gradients */}
-                                    <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-black/50 to-transparent -z-10" />
-                                    <div className="absolute bottom-0 left-0 w-full h-48 bg-gradient-to-t from-black/70 to-transparent -z-10" />
+                                    <div className="absolute top-0 left-0 w-full h-32 bg-linear-to-b from-black/50 to-transparent -z-10" />
+                                    <div className="absolute bottom-0 left-0 w-full h-48 bg-linear-to-t from-black/70 to-transparent -z-10" />
 
                                     <div className="absolute bottom-16 left-0 w-full text-white">
                                         <div className="max-w-[1440px] mx-auto px-12">
@@ -120,7 +120,7 @@ export default function HeroSection() {
                 </CarouselContent>
 
                 {/* Mobile Pagination: 3-Dot Track Logic */}
-                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[100] flex md:hidden items-center justify-center gap-1.5">
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-100 flex md:hidden items-center justify-center gap-1.5">
                     {[0, 1, 2].map((dotIndex) => {
                         const isActive =
                             (dotIndex === 0 && current === 0) ||

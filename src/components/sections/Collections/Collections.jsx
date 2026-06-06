@@ -18,11 +18,11 @@ export default function Collections() {
                 Mobile: 1 column, standard DOM order.
                 Desktop: 2 columns, manipulating the order of the bottom row.
             */}
-            <div className="w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-10 md:mb-14">
+            <div className="w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 mb-10 md:mb-14">
 
                 {/* Node 1: Women's Image (Top Left on Desktop, Top on Mobile) */}
-                <ScrollReveal delay={0.1} className="h-full w-full block order-1">
-                    <div className="relative w-full aspect-4/5 md:aspect-5/4 overflow-hidden group">
+                <ScrollReveal delay={0.1} className="h-full w-full block order-1 md:col-span-7">
+                    <div className="relative w-full aspect-4/3 sm:aspect-video md:aspect-auto md:h-full md:min-h-[450px] overflow-hidden group">
                         <Image
                             src="/images/collection-woman.jpg"
                             alt="Women's Collection"
@@ -34,8 +34,8 @@ export default function Collections() {
                 </ScrollReveal>
 
                 {/* Node 2: Gray Text Block (Top Right on Desktop, 2nd on Mobile) */}
-                <ScrollReveal delay={0.2} className="h-full w-full block order-2">
-                    <div className="w-full aspect-4/5 md:aspect-5/4 bg-border flex flex-col items-start justify-center p-8 sm:p-12 md:p-16">
+                <ScrollReveal delay={0.2} className="h-full w-full block order-2 md:col-span-5">
+                    <div className="w-full h-auto py-12 px-6 sm:px-10 md:py-0 md:px-16 md:h-full md:min-h-[450px] bg-border flex flex-col items-start justify-center">
                         <h3 className="text-3xl md:text-4xl lg:text-5xl font-medium text-foreground tracking-tight leading-tight mb-6 md:mb-8">
                             Built by the street,<br />Made for you
                         </h3>
@@ -50,8 +50,8 @@ export default function Collections() {
                 </ScrollReveal>
 
                 {/* Node 3: Men's Image (Bottom Right on Desktop, 3rd on Mobile) */}
-                <ScrollReveal delay={0.3} className="h-full w-full block order-3 md:order-4">
-                    <div className="relative w-full aspect-4/5 md:aspect-5/4 overflow-hidden group">
+                <ScrollReveal delay={0.3} className="h-full w-full block order-3 md:order-4 md:col-span-7">
+                    <div className="relative w-full aspect-4/3 sm:aspect-video md:aspect-auto md:h-full md:min-h-[450px] overflow-hidden group">
                         <Image
                             src="/images/collection-man.jpg"
                             alt="Men's Collection"
@@ -63,8 +63,8 @@ export default function Collections() {
                 </ScrollReveal>
 
                 {/* Node 4: Black Text Block (Bottom Left on Desktop, 4th on Mobile) */}
-                <ScrollReveal delay={0.4} className="h-full w-full block order-4 md:order-3">
-                    <div className="w-full aspect-4/5 md:aspect-5/4 bg-foreground flex flex-col items-start justify-center p-8 sm:p-12 md:p-16">
+                <ScrollReveal delay={0.4} className="h-full w-full block order-4 md:order-3 md:col-span-5">
+                    <div className="w-full h-auto py-12 px-6 sm:px-10 md:py-0 md:px-16 md:h-full md:min-h-[450px] bg-foreground flex flex-col items-start justify-center">
                         <h3 className="text-3xl md:text-4xl lg:text-5xl font-medium text-background tracking-tight leading-tight mb-6 md:mb-8">
                             Elevate your style<br />Effortlessly
                         </h3>

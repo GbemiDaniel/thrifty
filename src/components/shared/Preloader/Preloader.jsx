@@ -27,7 +27,7 @@ export default function Preloader() {
     <AnimatePresence>
       {isLoading && (
         <motion.div
-          className="fixed inset-0 z-[999] flex items-center justify-center bg-background"
+          className="fixed inset-0 z-999 flex items-center justify-center bg-background"
           initial={{ y: 0 }}
           exit={{ 
             y: "-100%", 
