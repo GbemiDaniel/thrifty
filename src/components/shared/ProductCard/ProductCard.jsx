@@ -25,7 +25,7 @@ export default function ProductCard({ image, title, category, price, id }) {
             <div className="flex flex-col items-center text-center mt-2">
                 <h3 className="text-sm font-bold text-foreground">{title}</h3>
                 <p className="text-xs text-foreground/50 mt-1">{category}</p>
-                <p className="text-sm font-bold text-foreground mt-1">{price}</p>
+                <p className="text-sm font-bold text-foreground mt-1">${Number(price).toFixed(2)}</p>
             </div>
         </Link>
     );
