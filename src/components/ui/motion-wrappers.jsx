@@ -1,6 +1,6 @@
 "use client";
 import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 
 /* =========================================
    1. MASTER VARIANTS (The Physics)
@@ -19,6 +19,11 @@ const fadeUpVariants = {
         opacity: 1,
         y: 0,
         transition: { type: "spring", stiffness: 120, damping: 20 }
+    },
+    exit: {
+        opacity: 0,
+        scale: 0.95,
+        transition: { duration: 0.2 }
     }
 };
 
@@ -35,14 +40,21 @@ export function StaggerContainer({ children, className = "" }) {
             variants={staggerVariants}
             className={className}
         >
-            {children}
+            <AnimatePresence mode="popLayout">
+                {children}
+            </AnimatePresence>
         </motion.div>
     );
 }
 
 export function FadeUp({ children, className = "" }) {
     return (
-        <motion.div variants={fadeUpVariants} className={className}>
+        <motion.div 
+            variants={fadeUpVariants} 
+            layout 
+            exit="exit" 
+            className={className}
+        >
             {children}
         </motion.div>
     );

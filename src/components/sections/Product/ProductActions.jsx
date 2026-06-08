@@ -13,7 +13,7 @@ export default function ProductActions({ product }) {
     const [isAdded, setIsAdded] = useState(false);
 
     const addItem = useCartStore((state) => state.addItem);
-    const numericPrice = parseFloat(product.price.replace(/[^0-9.]/g, ''));
+    const numericPrice = parseFloat(String(product.price).replace(/[^0-9.]/g, ''));
 
     const handleAddToCart = () => {
         const newItem = {
