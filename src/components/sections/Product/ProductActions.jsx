@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useCartStore } from "@/store/cartStore";
+import { toast } from "sonner";
 
 export default function ProductActions({ product }) {
     if (!product) return null;
@@ -28,6 +29,8 @@ export default function ProductActions({ product }) {
         };
 
         addItem(newItem);
+
+        toast.success("Added to cart", { description: `${product.title} has been added to your bag.` });
 
         // Visual feedback
         setIsAdded(true);

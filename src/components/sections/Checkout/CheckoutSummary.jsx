@@ -25,7 +25,7 @@ export default function CheckoutSummary() {
                         <div key={variantKey} className="flex gap-4 items-center">
                             <div className="relative w-16 h-16 bg-[#dcdcdc] rounded-sm shrink-0 overflow-hidden border border-gray-100">
                                 {item.image && (
-                                    <Image src={item.image} alt={item.name} fill className="object-cover" />
+                                    <Image src={item.image} alt={item.name} fill sizes="64px" className="object-cover" />
                                 )}
                             </div>
                             <div className="flex flex-col grow min-w-0">

@@ -2,6 +2,7 @@ import { Raleway, Inter } from 'next/font/google';
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import Preloader from "@/components/shared/Preloader/Preloader";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
@@ -29,8 +30,7 @@ export default function RootLayout({ children }) {
         <main className="flex-1 w-full flex flex-col">
           {children}
         </main>
-
-
+        <Toaster />
       </body>
     </html>
   );

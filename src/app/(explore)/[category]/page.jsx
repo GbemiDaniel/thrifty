@@ -8,6 +8,8 @@ import { globalCatalog } from "@/lib/constants";
 import { Filter } from "lucide-react";
 import FilterSidebar from "@/components/shared/FilterSidebar/FilterSidebar";
 import MobileFilterDrawer from "@/components/sections/Category/MobileFilterDrawer";
+import SortDropdown from "@/components/shared/SortDropdown/SortDropdown";
+import PaginationControls from "@/components/shared/PaginationControls/PaginationControls";
 
 // Generate static params for Next.js build optimization
 export function generateStaticParams() {
@@ -33,6 +35,8 @@ export default async function CategoryPage({ params, searchParams }) {
     const activeSizes = resolvedSearchParams.size ? resolvedSearchParams.size.toLowerCase().split(',') : [];
     const activeMinPrice = resolvedSearchParams.minPrice ? parseInt(resolvedSearchParams.minPrice) : 0;
     const activeMaxPrice = resolvedSearchParams.maxPrice ? parseInt(resolvedSearchParams.maxPrice) : 200;
+    const activeSort = resolvedSearchParams.sort || 'recommended';
+    const currentPage = parseInt(resolvedSearchParams.page) || 1;
 
     const sizeMap = {
         "xxs": "xx-small",
@@ -96,6 +100,16 @@ export default async function CategoryPage({ params, searchParams }) {
         return true;
     });
 
+    if (activeSort === 'price_asc') {
+        products.sort((a, b) => a.price - b.price);
+    } else if (activeSort === 'price_desc') {
+        products.sort((a, b) => b.price - a.price);
+    }
+
+    const ITEMS_PER_PAGE = 12;
+    const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);
+    const paginatedProducts = products.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
     // 4. Capitalize for the Header
     const displayCategory = categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
 
@@ -139,14 +153,22 @@ export default async function CategoryPage({ params, searchParams }) {
 
                     {/* Product Grid */}
                     <div className="flex-1 w-full">
+                        <div className="flex items-center justify-end md:justify-between mb-6">
+                            <span className="font-medium text-sm hidden md:block text-muted-foreground">Showing {products.length} Results</span>
+                            <SortDropdown />
+                        </div>
+
                         {products.length > 0 ? (
-                            <StaggerContainer className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-x-6 md:gap-y-12">
-                                {products.map((product) => (
-                                    <FadeUp key={product.id} className="h-full w-full">
-                                        <ProductCard {...product} />
-                                    </FadeUp>
-                                ))}
-                            </StaggerContainer>
+                            <>
+                                <StaggerContainer className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-x-6 md:gap-y-12">
+                                    {paginatedProducts.map((product) => (
+                                        <FadeUp key={product.id} className="h-full w-full">
+                                            <ProductCard {...product} />
+                                        </FadeUp>
+                                    ))}
+                                </StaggerContainer>
+                                <PaginationControls currentPage={currentPage} totalPages={totalPages} />
+                            </>
                         ) : (
                             <div className="w-full py-20 flex flex-col items-center justify-center text-center">
                                 <p className="text-xl font-medium text-foreground/70">No products found in this category.</p>

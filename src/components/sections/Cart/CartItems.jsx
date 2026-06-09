@@ -42,7 +42,7 @@ export default function CartItems() {
                         {/* Image Placeholder */}
                         <div className="relative w-24 h-32 md:w-32 md:h-40 bg-card rounded-sm shrink-0 overflow-hidden border border-border">
                             {item.image && (
-                                <Image src={item.image} alt={item.name} fill className="object-cover" />
+                                <Image src={item.image} alt={item.name} fill sizes="(max-width: 768px) 96px, 128px" className="object-cover" />
                             )}
                         </div>
 

@@ -158,13 +158,31 @@ export default function Navbar() {
                             <div className={`h-3 w-px transition-colors ${isSolid ? "bg-border" : "bg-white/40"}`}></div>
                             <Link href="/contact" className={`transition-colors ${isSolid ? "hover:text-foreground" : "hover:text-white"}`}>Contact Us</Link>
 
-                            <button
-                                className={`ml-2 transition-colors ${isSolid ? "hover:text-foreground" : "hover:text-white"}`}
-                                onClick={() => setIsSearchOpen(!isSearchOpen)}
-                                aria-label="Toggle search"
+                            <form 
+                                onSubmit={handleSearchSubmit} 
+                                className={`relative flex items-center transition-all duration-300 ml-2 ${isSearchOpen ? "w-48 md:w-64" : "w-5 md:w-6"}`}
                             >
-                                {isSearchOpen ? <X className="w-5 h-5" /> : <Search className="w-5 h-5" />}
-                            </button>
+                                <input
+                                    type="text"
+                                    placeholder="Search..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className={`absolute right-0 bg-muted/50 border border-border rounded-full py-1.5 pl-4 pr-8 text-sm focus:outline-none focus:ring-1 focus:ring-foreground/20 transition-all text-foreground ${isSearchOpen ? "w-full opacity-100" : "w-0 opacity-0 pointer-events-none"}`}
+                                />
+                                <button
+                                    type={isSearchOpen ? "submit" : "button"}
+                                    className={`absolute right-0 transition-colors flex items-center justify-center w-5 h-5 md:w-6 md:h-6 ${isSearchOpen ? "text-foreground hover:text-foreground/70" : (isSolid ? "hover:text-foreground" : "hover:text-white")}`}
+                                    onClick={(e) => {
+                                        if (!isSearchOpen) {
+                                            e.preventDefault();
+                                            setIsSearchOpen(true);
+                                        }
+                                    }}
+                                    aria-label="Submit search"
+                                >
+                                    <Search className="w-4 h-4 md:w-5 md:h-5" />
+                                </button>
+                            </form>
 
                             <Link href="/cart" className={`relative flex items-center transition-colors ${isSolid ? "hover:text-foreground" : "hover:text-white"}`}>
                                 <ShoppingCart className="w-5 h-5" />
@@ -175,33 +193,6 @@ export default function Navbar() {
                                 )}
                             </Link>
                         </div>
-                    </div>
-                </div>
-
-                {/* ==============================================
-                    SEARCH DROPDOWN
-                    ============================================== */}
-                <div className={`w-full overflow-hidden transition-all duration-300 ${isSearchOpen
-                    ? "max-h-32 py-6 opacity-100 bg-background text-foreground border-b border-border shadow-md"
-                    : "max-h-0 py-0 opacity-0"
-                    }`}>
-                    <div className="max-w-[1440px] mx-auto px-4 md:px-12 flex justify-center">
-                        <form onSubmit={handleSearchSubmit} className="relative w-full max-w-2xl">
-                            <input
-                                type="text"
-                                placeholder="Search products, brands, or categories..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full bg-muted/50 border border-border rounded-full px-6 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/20 transition-all pr-12 text-foreground"
-                            />
-                            <button
-                                type="submit"
-                                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-foreground/70 hover:text-foreground transition-colors"
-                                aria-label="Submit search"
-                            >
-                                <ArrowRight className="w-5 h-5" />
-                            </button>
-                        </form>
                     </div>
                 </div>
 
