@@ -25,6 +25,11 @@
     --radius-sm: 0.25rem;
     --radius-md: 0.5rem;
 
+    --admin-background: #F8F9FA;
+    --admin-sidebar: #FFFFFF;
+    --admin-accent: #6C5DD3;
+    --admin-accent-foreground: #FFFFFF;
+
     /* =========================================
      2. FLUID TYPOGRAPHY SCALE
      ========================================= */
@@ -83,6 +88,11 @@
 
     --color-muted: var(--muted);
     --color-muted-foreground: var(--muted-foreground);
+
+    --color-admin-background: var(--admin-background);
+    --color-admin-sidebar: var(--admin-sidebar);
+    --color-admin-accent: var(--admin-accent);
+    --color-admin-accent-foreground: var(--admin-accent-foreground);
 
     --text-h1: var(--text-fluid-h1);
     --text-h2: var(--text-fluid-h2);
