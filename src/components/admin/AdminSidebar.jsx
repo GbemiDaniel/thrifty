@@ -19,7 +19,7 @@ export default function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 bg-admin-sidebar border-r border-border flex flex-col">
+    <aside className="fixed left-0 top-0 h-screen w-64 bg-[#F7F7F7] border-r border-border flex flex-col">
       {/* Profile Block */}
       <div className="flex items-center gap-3 p-6">
         <div className="w-10 h-10 rounded-xl bg-orange-100 flex-shrink-0" /> {/* Placeholder */}
@@ -32,17 +32,21 @@ export default function AdminSidebar() {
       {/* Navigation */}
       <nav className="flex-1 px-4 py-2 flex flex-col gap-2 overflow-y-auto hide-scrollbar">
         {navLinks.map((link) => {
-          const isActive = pathname === link.href;
+          // If the link is exactly '/admin', only match exact. Otherwise, match any sub-route (e.g. /admin/products/new)
+          const isActive = link.href === "/admin" 
+            ? pathname === link.href 
+            : pathname.startsWith(link.href);
+          
           const Icon = link.icon;
 
           return (
             <Link
               key={link.href}
               href={link.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+              className={`flex items-center gap-3 mx-4 px-4 py-3 rounded-xl transition-all duration-200 ${
                 isActive
-                  ? "bg-admin-accent text-admin-accent-foreground shadow-md"
-                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                  ? "bg-violet-600 text-white shadow-sm"
+                  : "text-slate-500 hover:bg-slate-200/50"
               }`}
             >
               <Icon className="w-5 h-5" />

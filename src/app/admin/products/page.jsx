@@ -1,8 +1,27 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
+import Breadcrumb from "@/components/ui/Breadcrumb";
 import { Search, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { createClient } from "@/utils/supabase/server";
+const formatTableText = (text, maxWords = 5, stripHtml = false) => {
+  if (!text) return '-';
+  
+  // Step 1: Strip HTML if requested
+  let cleanText = text;
+  if (stripHtml) {
+    cleanText = cleanText.replace(/<[^>]+>/g, ''); // Basic regex to remove HTML tags
+    // Decode common HTML entities that might be left over
+    cleanText = cleanText.replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&'); 
+  }
 
+  // Step 2: Truncate by word count
+  const words = cleanText.trim().split(/\s+/);
+  if (words.length > maxWords) {
+    return words.slice(0, maxWords).join(' ') + '...';
+  }
+  
+  return cleanText;
+};
 export default async function ProductsPage() {
     const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
@@ -21,26 +40,26 @@ export default async function ProductsPage() {
     return (
         <div className="flex flex-col gap-6">
             {/* Header Section */}
-            <div className="flex items-center justify-between">
-                <div>
-                    <div className="text-sm text-muted-foreground mb-2">
-                        Dashboard <span className="mx-1">&gt;</span> Products
-                    </div>
-                    <h1 className="text-3xl font-bold text-foreground">Products</h1>
-                </div>
+            <div className="flex items-center justify-between mb-6">
+                <Breadcrumb 
+                    items={[
+                        { label: 'Dashboard', href: '/admin' }, 
+                        { label: 'Products' }
+                    ]} 
+                />
                 <Link
                     href="/admin/products/new"
-                    className="bg-admin-accent text-admin-accent-foreground px-6 py-2 rounded-xl font-medium shadow-sm hover:bg-admin-accent/90 transition-colors"
+                    className="bg-black text-white hover:bg-black/90 px-6 py-2 rounded-lg font-medium transition-colors"
                 >
                     Add product
                 </Link>
             </div>
 
-            <div className="bg-admin-sidebar rounded-xl shadow-sm overflow-hidden flex flex-col border border-border">
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden flex flex-col">
                 {/* Filter Tabs */}
                 <div className="flex items-center gap-6 px-6 pt-4 border-b border-border text-sm">
-                    <div className="pb-3 border-b-2 border-admin-accent text-foreground font-semibold cursor-pointer">
-                        All <span className="text-muted-foreground font-normal ml-1">{allCount}</span>
+                    <div className="pb-3 border-b-2 border-violet-600 text-slate-900 font-semibold cursor-pointer">
+                        All <span className="text-slate-500 font-normal ml-1">{allCount}</span>
                     </div>
                     <div className="pb-3 text-muted-foreground hover:text-foreground cursor-pointer transition-colors font-medium">
                         Draft <span className="ml-1">{draftCount}</span>
@@ -77,7 +96,7 @@ export default async function ProductsPage() {
                 {/* Data Table */}
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
-                        <thead className="bg-admin-sidebar text-muted-foreground font-medium border-b border-border">
+                        <thead className="bg-slate-50 text-slate-500 font-medium border-y border-slate-200">
                             <tr>
                                 <th className="px-6 py-4 font-medium w-12 text-center">
                                     <input type="checkbox" className="rounded border-border cursor-pointer" />
@@ -116,7 +135,7 @@ export default async function ProductsPage() {
                                                         <span className="text-[10px] text-muted-foreground">No img</span>
                                                     )}
                                                 </div>
-                                                <span className="font-medium text-foreground">{product.title || 'No Title'}</span>
+                                                <span className="font-medium text-foreground">{formatTableText(product.title, 4, false) || 'No Title'}</span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-muted-foreground">
@@ -126,20 +145,20 @@ export default async function ProductsPage() {
                                             {product.category || '-'}
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="truncate max-w-xs text-muted-foreground">
-                                                {product.description || '-'}
+                                            <div className="text-muted-foreground">
+                                                {formatTableText(product.description, 8, true)}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-center">
-                                            <span className={`inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-medium ${(product.status || '').toLowerCase() === 'published'
-                                                    ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400'
-                                                    : 'bg-slate-100 text-slate-600 dark:bg-slate-500/20 dark:text-slate-400'
+                                            <span className={`text-sm ${(product.status || '').toLowerCase() === 'published'
+                                                    ? 'text-emerald-600 font-semibold'
+                                                    : 'text-blue-600 font-semibold'
                                                 }`}>
                                                 {product.status ? product.status.charAt(0).toUpperCase() + product.status.slice(1) : 'Draft'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <Link href={`/admin/products/${product.id}`} className="text-admin-accent hover:underline font-medium text-sm">
+                                            <Link href={`/admin/products/${product.id}`} className="text-blue-600 font-semibold hover:underline text-sm">
                                                 View
                                             </Link>
                                         </td>
