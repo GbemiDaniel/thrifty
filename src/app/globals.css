@@ -158,7 +158,37 @@
 }
 
 /* =========================================
-   6. GLOBAL UTILITIES
+   6. COMPONENTS
+   ========================================= */
+@layer components {
+  /* Core Table Wrapper */
+  .admin-table {
+    @apply w-full text-sm text-left;
+  }
+
+  /* Premium Header Styling */
+  .admin-table-thead {
+    @apply text-slate-500 font-medium border-b border-border bg-transparent text-xs uppercase tracking-wider;
+  }
+
+  /* Standardized Header Cells */
+  .admin-table-th {
+    @apply px-6 py-4 font-medium;
+  }
+
+  /* Row Hover State & Borders */
+  .admin-table-row {
+    @apply border-b border-border hover:bg-muted/30 transition-colors;
+  }
+
+  /* Premium Vertical Breathing Room for Cells */
+  .admin-table-td {
+    @apply px-6 py-5;
+  }
+}
+
+/* =========================================
+   7. GLOBAL UTILITIES
    ========================================= */
 @layer utilities {
     .hide-scrollbar {

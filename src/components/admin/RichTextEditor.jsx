@@ -7,19 +7,22 @@ import TextAlign from '@tiptap/extension-text-align';
 import LinkExtension from '@tiptap/extension-link';
 import { Bold, Italic, Underline as UnderlineIcon, AlignLeft, AlignCenter, List, Quote, Link as LinkIcon } from 'lucide-react';
 
+const extensions = [
+  StarterKit,
+  Underline,
+  TextAlign.configure({
+    types: ['heading', 'paragraph'],
+  }),
+  LinkExtension.configure({
+    openOnClick: false,
+  }),
+];
+
 export default function RichTextEditor({ value, onChange }) {
   const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Underline,
-      TextAlign.configure({
-        types: ['heading', 'paragraph'],
-      }),
-      LinkExtension.configure({
-        openOnClick: false,
-      }),
-    ],
+    extensions,
     content: value,
+    immediatelyRender: false,
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
     },
