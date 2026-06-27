@@ -5,6 +5,8 @@ import { useRouter, usePathname } from "next/navigation";
 import { Search, ShoppingCart, Menu, X, ArrowRight, ChevronDown } from "lucide-react";
 import { SlideDownHeader } from "@/components/ui/motion-wrappers";
 import { useCartStore } from "@/store/cartStore";
+import UserDropdown from "@/components/shared/UserDropdown";
+import styles from "./Navbar.module.css";
 
 export default function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -152,7 +154,7 @@ export default function Navbar() {
                         </nav>
 
                         <div className={`flex items-center gap-6 text-sm font-medium transition-colors ${isSolid ? "text-foreground/90" : "text-white/90"}`}>
-                            <Link href="/login" className={`transition-colors ${isSolid ? "hover:text-foreground" : "hover:text-white"}`}>Login</Link>
+                            <UserDropdown />
                             <div className={`h-3 w-px transition-colors ${isSolid ? "bg-border" : "bg-white/40"}`}></div>
                             <Link href="/help" className={`transition-colors ${isSolid ? "hover:text-foreground" : "hover:text-white"}`}>Help</Link>
                             <div className={`h-3 w-px transition-colors ${isSolid ? "bg-border" : "bg-white/40"}`}></div>
@@ -257,9 +259,7 @@ export default function Navbar() {
                 </div>
 
                 <div className="mt-auto px-6 py-8 bg-muted/30 flex flex-col gap-6 text-sm font-medium text-foreground/80 border-t border-border/50">
-                    <Link href="/login" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-foreground transition-colors">
-                        Login / Register
-                    </Link>
+                    <UserDropdown />
                     <Link href="/help" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-foreground transition-colors">
                         Help Center
                     </Link>

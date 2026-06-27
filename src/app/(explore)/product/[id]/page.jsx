@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
-import { globalCatalog } from "@/lib/constants";
 import Link from "next/link";
+import { createClient } from "@/utils/supabase/server";
+import { cookies } from "next/headers";
+import { mapSupabaseToUIProduct } from "@/utils/data-adapters";
 
 import ProductNavbar from "@/components/sections/Product/ProductNavbar";
 import ProductGallery from "@/components/sections/Product/ProductGallery";
@@ -10,25 +12,40 @@ import DeliveryReturns from "@/components/sections/Product/DeliveryReturns";
 import ProductReviews from "@/components/sections/Product/ProductReviews";
 import RecommendationGrid from "@/components/sections/Product/RecommendationGrid";
 
-// Optimizes server builds by pre-generating routes for all known products
-export function generateStaticParams() {
-    return globalCatalog.map((product) => ({
-        id: product.id,
-    }));
-}
+// Ensure page always fetches fresh data
+export const dynamic = 'force-dynamic';
 
 export default async function ProductPage({ params }) {
     // 1. Await params for Next.js 15+
     const resolvedParams = await params;
-    const productId = resolvedParams.id;
+    const { id } = resolvedParams;
 
-    // 2. Fetch from your centralized catalog
-    const product = globalCatalog.find((p) => p.id === productId);
+    const cookieStore = await cookies();
+    const supabase = createClient(cookieStore);
 
-    // 3. Graceful fallback if the ID doesn't exist
-    if (!product) {
-        notFound();
+    // Fetch the single product by ID
+    const { data: rawProduct, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+    if (error || !rawProduct) {
+        console.error("Product fetch error:", error);
+        return notFound();
     }
+
+    // Transform the payload to match the UI Contract
+    const product = mapSupabaseToUIProduct(rawProduct);
+
+    // --- INJECT THIS X-RAY DIAGNOSTIC BLOCK ---
+    console.log("\n====== PDP IMAGE X-RAY ======");
+    console.log("1. Product Title:", product?.title);
+    console.log("2. Singular 'image' property:", product?.image);
+    console.log("3. Plural 'images' array property:", product?.images);
+    console.log("4. Raw DB 'images' array:", rawProduct?.images);
+    console.log("=============================\n");
+    // ------------------------------------------
 
     // Capitalize category for the breadcrumb UI
     const displayCategory = product.category.charAt(0).toUpperCase() + product.category.slice(1);
@@ -53,8 +70,8 @@ export default async function ProductPage({ params }) {
                 {/* TOP SPLIT */}
                 <div className="flex flex-col lg:flex-row gap-10 lg:gap-16 mb-16 md:mb-20">
                     <div className="w-full lg:w-[55%]">
-                        {/* Passing the product data down so your gallery knows what images to show */}
-                        <ProductGallery product={product} />
+                        {/* Passing the images array down so the gallery knows what images to show */}
+                        <ProductGallery images={product.images} />
                     </div>
                     <div className="w-full lg:w-[45%]">
                         {/* Passing the product data down for pricing, sizes, colors, and cart logic */}

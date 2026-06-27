@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Search, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, ChevronDown, ChevronLeft, ChevronRight, Trash } from "lucide-react";
+import { toast } from "sonner";
 import ProductActions from "./ProductActions";
 import DeleteProductDialog from "./DeleteProductDialog";
 import {
@@ -27,6 +28,7 @@ export default function ProductsTableClient({ processedProducts, allCount, draft
   const [productToDelete, setProductToDelete] = useState(null);
   
   // 1. Define State Variables
+  const [selectedIds, setSelectedIds] = useState([]);
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -103,6 +105,27 @@ export default function ProductsTableClient({ processedProducts, allCount, draft
   const startItem = (currentPage - 1) * ITEMS_PER_PAGE + 1;
   const endItem = Math.min(currentPage * ITEMS_PER_PAGE, totalFilteredItems);
 
+  // Check if all currently visible rows are selected
+  const currentIds = paginatedProducts.map(p => p.id);
+  const isAllCurrentSelected = currentIds.length > 0 && currentIds.every(id => selectedIds.includes(id));
+
+  const toggleRow = (id) => {
+      setSelectedIds(prev => 
+          prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+      );
+  };
+
+  const toggleAll = () => {
+      if (isAllCurrentSelected) {
+          // Deselect current page
+          setSelectedIds(prev => prev.filter(id => !currentIds.includes(id)));
+      } else {
+          // Select current page (merging with any already selected on other pages)
+          const newIds = new Set([...selectedIds, ...currentIds]);
+          setSelectedIds(Array.from(newIds));
+      }
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-sm flex flex-col relative">
       {/* Filter Tabs */}
@@ -128,6 +151,32 @@ export default function ProductsTableClient({ processedProducts, allCount, draft
       </div>
 
       {/* Toolbar */}
+      {selectedIds.length > 0 ? (
+          <div className="p-4 flex items-center justify-between border-b border-violet-200 bg-violet-50/50">
+              <div className="flex items-center gap-3">
+                  <span className="text-sm font-semibold text-violet-900">
+                      {selectedIds.length} product{selectedIds.length > 1 ? 's' : ''} selected
+                  </span>
+              </div>
+              <div className="flex items-center gap-3">
+                  <button 
+                      onClick={() => setSelectedIds([])}
+                      className="text-sm font-medium text-violet-700 hover:bg-violet-100 px-3 py-1.5 rounded-lg transition-colors"
+                  >
+                      Cancel
+                  </button>
+                  <button 
+                      onClick={() => {
+                          // Placeholder for future bulk delete logic
+                          toast.error("Bulk delete requires a backend route update.");
+                      }}
+                      className="flex items-center gap-2 bg-destructive text-white hover:bg-destructive/90 px-4 py-1.5 rounded-lg text-sm font-medium transition-colors shadow-sm"
+                  >
+                      <Trash className="w-4 h-4" /> Delete Selected
+                  </button>
+              </div>
+          </div>
+      ) : (
       <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between border-b border-border bg-admin-sidebar gap-4">
           <div className="flex flex-wrap items-center gap-3">
             {/* Category Select */}
@@ -192,13 +241,21 @@ export default function ProductsTableClient({ processedProducts, allCount, draft
               />
           </div>
       </div>
+      )}
 
       {/* Data Table */}
       <div className="overflow-x-auto">
           <table className="admin-table">
               <thead className="admin-table-thead">
                   <tr>
-                      <th className="admin-table-th w-12 text-center"><input type="checkbox" className="rounded border-border cursor-pointer" /></th>
+                      <th className="admin-table-th w-12 text-center">
+                          <input 
+                              type="checkbox" 
+                              checked={isAllCurrentSelected}
+                              onChange={toggleAll}
+                              className="rounded border-slate-300 text-violet-600 focus:ring-violet-600 cursor-pointer" 
+                          />
+                      </th>
                       <th className="admin-table-th">Product</th>
                       <th className="admin-table-th">Price</th>
                       <th className="admin-table-th">Category</th>
@@ -211,11 +268,32 @@ export default function ProductsTableClient({ processedProducts, allCount, draft
                   {paginatedProducts.length === 0 ? (
                       <tr><td colSpan="7" className="px-6 py-12 text-center text-muted-foreground">No products found.</td></tr>
                   ) : (
-                      paginatedProducts.map((product) => (
-                          <tr key={product.id} className="admin-table-row">
-                              <td className="admin-table-td text-center align-middle"><input type="checkbox" className="rounded border-border cursor-pointer" /></td>
-                              <td className="admin-table-td">
-                                  <div className="flex items-center gap-3">
+                      paginatedProducts.map((product) => {
+                          const isSelected = selectedIds.includes(product.id);
+                          
+                          return (
+                              <tr 
+                                  key={product.id} 
+                                  onClick={() => toggleRow(product.id)}
+                                  className={`admin-table-row cursor-pointer transition-all duration-200 ${
+                                      isSelected 
+                                      ? 'bg-violet-50/80 shadow-[0_1px_3px_rgba(139,92,246,0.1)] border-2 border-violet-400/40 z-10 rounded-xl' 
+                                      : 'hover:bg-slate-50/60 border-2 border-transparent z-0'
+                                  }`}
+                              >
+                                  <td 
+                                      className="admin-table-td text-center align-middle"
+                                      onClick={(e) => e.stopPropagation()}
+                                  >
+                                      <input 
+                                          type="checkbox" 
+                                          checked={isSelected}
+                                          onChange={() => toggleRow(product.id)}
+                                          className="rounded border-slate-300 text-violet-600 focus:ring-violet-600 cursor-pointer w-[18px] h-[18px] transition-transform hover:scale-105" 
+                                      />
+                                  </td>
+                                  <td className="admin-table-td">
+                                      <div className="flex items-center gap-3">
                                       <div className="w-10 h-12 bg-muted rounded-md overflow-hidden flex-shrink-0 border border-border flex items-center justify-center">
                                           {product.images && product.images.length > 0 ? (
                                               <img src={product.images[0]} alt={product.title} className="w-full h-full object-cover" />
@@ -239,11 +317,15 @@ export default function ProductsTableClient({ processedProducts, allCount, draft
                                       {product.status ? product.status.charAt(0).toUpperCase() + product.status.slice(1) : 'Draft'}
                                   </span>
                               </td>
-                              <td className="admin-table-td text-right">
+                              <td 
+                                  className="admin-table-td text-right"
+                                  onClick={(e) => e.stopPropagation()}
+                              >
                                   <ProductActions product={product} onDeleteClick={setProductToDelete} />
                               </td>
                           </tr>
-                      ))
+                          );
+                      })
                   )}
               </tbody>
           </table>

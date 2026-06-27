@@ -85,7 +85,6 @@ export function ScrollReveal({ children, className = "", delay = 0 }) {
 
     // 2. The Native Observer (Triggers when 20% visible)
     const isInView = useInView(ref, { once: true, amount: 0.2 });
-    console.log("Is Bento in view?", isInView);
     return (
         <motion.div
             ref={ref}

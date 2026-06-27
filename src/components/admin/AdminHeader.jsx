@@ -1,7 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Search } from "lucide-react";
+import { Search, Globe } from "lucide-react";
+import Link from 'next/link';
 
 export default function AdminHeader() {
   const pathname = usePathname();
@@ -23,7 +24,15 @@ export default function AdminHeader() {
           />
         </div>
       </div>
-      <div className="flex-1"></div>
+      <div className="flex-1 flex items-center justify-end">
+        <Link 
+            href="/" 
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-black transition-all"
+        >
+            <Globe className="w-4 h-4 stroke-[1.5]" />
+            View Live Store
+        </Link>
+      </div>
     </header>
   );
 }

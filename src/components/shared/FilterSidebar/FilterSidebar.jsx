@@ -1,21 +1,67 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { SlidersHorizontal, ChevronRight, ChevronUp, Check } from "lucide-react";
-import { Slider } from "@/components/ui/slider";
 
-export default function FilterSidebar() {
+export default function FilterSidebar({ dynamicMaxPrice = 1000 }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const currentMaxLimit = dynamicMaxPrice;
+  const sliderStep = currentMaxLimit > 10000 ? 500 : currentMaxLimit > 1000 ? 50 : 10;
 
   // Local draft states
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [selectedStyles, setSelectedStyles] = useState([]);
   const [selectedColors, setSelectedColors] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState([]);
-  const [priceRange, setPriceRange] = useState([0, 200]);
+  const [draftMinPrice, setDraftMinPrice] = useState("");
+  const [draftMaxPrice, setDraftMaxPrice] = useState("");
+
+  // Collision-safe handlers
+  const handleMinChange = (e) => {
+    const maxVal = draftMaxPrice === "" ? currentMaxLimit : parseInt(draftMaxPrice);
+    const value = Math.min(Number(e.target.value), maxVal - sliderStep);
+    setDraftMinPrice(value);
+  };
+
+  const handleMaxChange = (e) => {
+    const minVal = draftMinPrice === "" ? 0 : parseInt(draftMinPrice);
+    const value = Math.max(Number(e.target.value), minVal + sliderStep);
+    setDraftMaxPrice(value);
+  };
+
+  const trackRef = useRef(null);
+
+  const handleTrackClick = (e) => {
+    if (!trackRef.current) return;
+    
+    // Get click position relative to the track
+    const rect = trackRef.current.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickPercentage = Math.max(0, Math.min(1, clickX / rect.width));
+    
+    // Convert to raw price and snap to the nearest step
+    const rawValue = clickPercentage * currentMaxLimit;
+    const snappedValue = Math.round(rawValue / sliderStep) * sliderStep;
+
+    // Determine which thumb is closer to the tap
+    const currentMin = draftMinPrice === "" ? 0 : parseInt(draftMinPrice);
+    const currentMax = draftMaxPrice === "" ? currentMaxLimit : parseInt(draftMaxPrice);
+    
+    const distanceToMin = Math.abs(snappedValue - currentMin);
+    const distanceToMax = Math.abs(snappedValue - currentMax);
+
+    if (distanceToMin <= distanceToMax) {
+        // Prevent Min from crossing Max
+        setDraftMinPrice(Math.min(snappedValue, currentMax - sliderStep));
+    } else {
+        // Prevent Max from crossing Min
+        setDraftMaxPrice(Math.max(snappedValue, currentMin + sliderStep));
+    }
+  };
 
   // Accordion state
   const [expanded, setExpanded] = useState({ type: true, price: true, colors: true, size: true, style: true });
@@ -34,9 +80,8 @@ export default function FilterSidebar() {
     setSelectedColors(colorsParam ? colorsParam.split(",") : []);
     setSelectedSizes(sizesParam ? sizesParam.split(",") : []);
     
-    const initialMin = minPriceParam ? parseInt(minPriceParam) : 0;
-    const initialMax = maxPriceParam ? parseInt(maxPriceParam) : 200;
-    setPriceRange([initialMin, initialMax]);
+    setDraftMinPrice(minPriceParam ? minPriceParam : "");
+    setDraftMaxPrice(maxPriceParam ? maxPriceParam : "");
   }, [searchParams]);
 
   const toggleSection = (section) => setExpanded((prev) => ({ ...prev, [section]: !prev[section] }));
@@ -92,14 +137,17 @@ export default function FilterSidebar() {
       params.delete("size");
     }
 
-    if (priceRange[0] > 0) {
-      params.set("minPrice", priceRange[0]);
+    const finalMinPrice = draftMinPrice === "" ? 0 : parseInt(draftMinPrice);
+    const finalMaxPrice = draftMaxPrice === "" ? currentMaxLimit : parseInt(draftMaxPrice);
+
+    if (finalMinPrice > 0) {
+      params.set("minPrice", finalMinPrice);
     } else {
       params.delete("minPrice");
     }
 
-    if (priceRange[1] < 200) {
-      params.set("maxPrice", priceRange[1]);
+    if (finalMaxPrice < currentMaxLimit) {
+      params.set("maxPrice", finalMaxPrice);
     } else {
       params.delete("maxPrice");
     }
@@ -148,11 +196,12 @@ export default function FilterSidebar() {
         {expanded.type && (
           <div className="flex flex-col gap-4 pt-2">
             {categories.map((cat) => {
-              const isSelected = selectedTypes.includes(cat);
+              const catValue = cat.toLowerCase();
+              const isSelected = selectedTypes.includes(catValue);
               return (
                 <button
-                  key={cat}
-                  onClick={() => toggleType(cat)}
+                  key={catValue}
+                  onClick={() => toggleType(catValue)}
                   className={`flex items-center justify-between text-sm font-medium transition-colors ${
                     isSelected ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                   }`}
@@ -177,17 +226,51 @@ export default function FilterSidebar() {
         </div>
         {expanded.price && (
           <div className="pt-2">
-            <Slider 
-              defaultValue={[0, 200]} 
-              max={200} 
-              step={5} 
-              value={priceRange} 
-              onValueChange={setPriceRange} 
-              className="my-6" 
-            />
-            <div className="flex justify-between items-center mt-4 text-sm text-foreground">
-              <span>${priceRange[0]}</span>
-              <span>$<span className="font-bold">{priceRange[1]}</span></span>
+            <div className="flex flex-col space-y-4">
+                {/* Price Readout */}
+                <div className="flex justify-between items-center text-sm font-medium text-foreground">
+                    <span>${draftMinPrice ? parseInt(draftMinPrice).toLocaleString() : "0"}</span>
+                    <span className="text-muted-foreground mx-2">-</span>
+                    <span>${draftMaxPrice ? parseInt(draftMaxPrice).toLocaleString() : currentMaxLimit.toLocaleString()}</span>
+                </div>
+
+                {/* Dual Slider Track */}
+                <div 
+                    ref={trackRef}
+                    onPointerDown={handleTrackClick}
+                    className="relative h-2 w-full bg-muted rounded-full mt-2 cursor-pointer pointer-events-auto"
+                >
+                    {/* Active Visual Track */}
+                    <div 
+                        className="absolute h-full bg-foreground rounded-full pointer-events-none"
+                        style={{ 
+                            left: `${((draftMinPrice === "" ? 0 : parseInt(draftMinPrice)) / currentMaxLimit) * 100}%`, 
+                            right: `${100 - ((draftMaxPrice === "" ? currentMaxLimit : parseInt(draftMaxPrice)) / currentMaxLimit) * 100}%` 
+                        }}
+                    ></div>
+
+                    {/* Min Range Input */}
+                    <input 
+                        type="range" 
+                        min="0"
+                        max={currentMaxLimit}
+                        step={sliderStep}
+                        value={draftMinPrice === "" ? 0 : draftMinPrice}
+                        onChange={handleMinChange}
+                        className="absolute w-full h-2 top-0 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-background [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-foreground [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer z-20"
+                    />
+
+                    {/* Max Range Input */}
+                    <input 
+                        type="range" 
+                        min="0"
+                        max={currentMaxLimit}
+                        step={sliderStep}
+                        value={draftMaxPrice === "" ? currentMaxLimit : draftMaxPrice}
+                        onChange={handleMaxChange}
+                        className="absolute w-full h-2 top-0 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-background [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-foreground [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer z-30"
+                    />
+                </div>
             </div>
           </div>
         )}
@@ -205,12 +288,13 @@ export default function FilterSidebar() {
         {expanded.colors && (
           <div className="grid grid-cols-5 gap-3 pt-2">
             {colors.map((color) => {
-              const isSelected = selectedColors.includes(color.name);
+              const colorValue = color.name.toLowerCase();
+              const isSelected = selectedColors.includes(colorValue);
               const isWhite = color.name === "White";
               return (
                 <button
-                  key={color.name}
-                  onClick={() => toggleColor(color.name)}
+                  key={colorValue}
+                  onClick={() => toggleColor(colorValue)}
                   className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-all hover:scale-110 focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2 ${color.class} ${
                     isWhite ? "border border-border" : ""
                   } ${isSelected ? "ring-2 ring-foreground ring-offset-2" : ""}`}
@@ -240,11 +324,12 @@ export default function FilterSidebar() {
         {expanded.size && (
           <div className="flex flex-wrap gap-2 pt-2">
             {sizes.map((size) => {
-              const isSelected = selectedSizes.includes(size);
+              const sizeValue = size.toLowerCase();
+              const isSelected = selectedSizes.includes(sizeValue);
               return (
                 <button
-                  key={size}
-                  onClick={() => toggleSize(size)}
+                  key={sizeValue}
+                  onClick={() => toggleSize(sizeValue)}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                     isSelected
                       ? "bg-foreground text-background"
@@ -271,11 +356,12 @@ export default function FilterSidebar() {
         {expanded.style && (
           <div className="flex flex-col gap-3 pt-2">
             {dressStyles.map((style) => {
-              const isSelected = selectedStyles.includes(style);
+              const styleValue = style.toLowerCase();
+              const isSelected = selectedStyles.includes(styleValue);
               return (
                 <button
-                  key={style}
-                  onClick={() => toggleStyle(style)}
+                  key={styleValue}
+                  onClick={() => toggleStyle(styleValue)}
                   className="flex items-center justify-between group"
                 >
                   <span className={`text-sm font-medium transition-colors ${isSelected ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"}`}>

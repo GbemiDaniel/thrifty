@@ -50,7 +50,7 @@ export default async function SearchPage({ searchParams }) {
                 <div className="max-w-[1440px] mx-auto px-4 md:px-12">
                     <div className="flex-1 w-full">
                         {searchResults.length > 0 ? (
-                            <StaggerContainer className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-x-6 md:gap-y-12">
+                            <StaggerContainer className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12">
                                 {searchResults.map((product) => (
                                     <FadeUp key={product.id} className="h-full w-full">
                                         <ProductCard {...product} />

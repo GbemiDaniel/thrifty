@@ -4,12 +4,16 @@ import Link from "next/link";
 import Navbar from "@/components/shared/Navbar/Navbar";
 import ProductCard from "@/components/shared/ProductCard/ProductCard";
 import { FadeUp, StaggerContainer } from "@/components/ui/motion-wrappers";
-import { globalCatalog } from "@/lib/constants";
+import { createClient } from "@/utils/supabase/server";
+import { cookies } from "next/headers";
+import { mapSupabaseToUIProduct } from "@/utils/data-adapters";
 import { Filter } from "lucide-react";
 import FilterSidebar from "@/components/shared/FilterSidebar/FilterSidebar";
 import MobileFilterDrawer from "@/components/sections/Category/MobileFilterDrawer";
 import SortDropdown from "@/components/shared/SortDropdown/SortDropdown";
 import PaginationControls from "@/components/shared/PaginationControls/PaginationControls";
+
+export const dynamic = 'force-dynamic';
 
 // Generate static params for Next.js build optimization
 export function generateStaticParams() {
@@ -28,13 +32,16 @@ export default async function CategoryPage({ params, searchParams }) {
         notFound();
     }
 
-    // Extract & Normalize URL Params
+    // 1. Extract & Normalize URL Params (Increased Default Max Price for Luxury Items)
     const activeTypes = resolvedSearchParams.type ? resolvedSearchParams.type.toLowerCase().split(',') : [];
     const activeStyles = resolvedSearchParams.style ? resolvedSearchParams.style.toLowerCase().split(',') : [];
     const activeColors = resolvedSearchParams.color ? resolvedSearchParams.color.toLowerCase().split(',') : [];
     const activeSizes = resolvedSearchParams.size ? resolvedSearchParams.size.toLowerCase().split(',') : [];
+    
+    // CRITICAL FIX: Bumped default max price to 1,000,000 to prevent filtering out luxury items like watches
     const activeMinPrice = resolvedSearchParams.minPrice ? parseInt(resolvedSearchParams.minPrice) : 0;
-    const activeMaxPrice = resolvedSearchParams.maxPrice ? parseInt(resolvedSearchParams.maxPrice) : 200;
+    const activeMaxPrice = resolvedSearchParams.maxPrice ? parseInt(resolvedSearchParams.maxPrice) : 1000000; 
+    
     const activeSort = resolvedSearchParams.sort || 'recommended';
     const currentPage = parseInt(resolvedSearchParams.page) || 1;
 
@@ -60,34 +67,55 @@ export default async function CategoryPage({ params, searchParams }) {
         "red": ["red", "crimson"]
     };
 
-    // 3. Filter the global catalog
-    const products = globalCatalog.filter((product) => {
-        // Route Match
-        if (product.category.toLowerCase() !== categoryName) return false;
+    // 2. The Database Layer (Supabase Dynamic Query Builder)
+    const cookieStore = await cookies();
+    const supabase = createClient(cookieStore);
 
-        // Type Match
-        if (activeTypes.length > 0) {
-            if (!product.subCategory || !activeTypes.includes(product.subCategory.toLowerCase())) return false;
-        }
+    let dbQuery = supabase
+        .from('products')
+        .select('*')
+        .ilike('category', categoryName)
+        .gte('price', activeMinPrice)
+        .lte('price', activeMaxPrice);
 
-        // Style Match
-        if (activeStyles.length > 0) {
-            if (!product.dressStyle || !activeStyles.includes(product.dressStyle.toLowerCase())) return false;
-        }
+    // Conditionally attach top-level filters to the DB query
+    if (activeTypes.length > 0) {
+        dbQuery = dbQuery.in('sub_category', activeTypes);
+    }
+    if (activeStyles.length > 0) {
+        dbQuery = dbQuery.in('dress_style', activeStyles);
+    }
 
-        // Price Match
-        if (product.price < activeMinPrice || product.price > activeMaxPrice) return false;
+    // Await the optimized payload
+    const { data: rawProducts, error } = await dbQuery;
 
-        // Color Match
+    if (error) console.error("Supabase Hybrid Query Error:", error);
+
+    // 3. Transform the payload via Adapter
+    const uiProducts = rawProducts ? rawProducts.map(mapSupabaseToUIProduct) : [];
+
+    // Calculate the absolute highest price in this specific category payload
+    // We add a 10% buffer so the most expensive item isn't pushed to the absolute edge of the slider
+    // Note: Since uiProducts is already filtered by activeMaxPrice, to prevent the slider from shrinking, 
+    // a production app might run a separate un-filtered max() aggregate query. 
+    const highestDbPrice = uiProducts.length > 0 
+        ? Math.max(...uiProducts.map(p => p.price)) 
+        : 1000;
+    
+    // If the user is heavily filtering, default to their URL max or the DB max so the slider doesn't permanently trap them.
+    const effectiveHighest = Math.max(highestDbPrice, activeMaxPrice === 1000000 ? 0 : activeMaxPrice);
+    const absoluteCategoryMax = Math.ceil(effectiveHighest * 1.1);
+
+    // 4. The Application Layer (JavaScript Array Filtering for complex mappings)
+    const products = uiProducts.filter((product) => {
+        // Color Match (Handles the mapped array logic)
         if (activeColors.length > 0) {
-            // Create a flat array of all valid DB color names based on the user's selection
             const validDbColors = activeColors.flatMap(color => colorGroups[color] || [color]);
-
             const hasColor = product.colors && product.colors.some(c => validDbColors.includes(c.name.toLowerCase()));
             if (!hasColor) return false;
         }
 
-        // Size Match
+        // Size Match (Handles the mapped array logic)
         if (activeSizes.length > 0) {
             const hasSize = product.sizes && product.sizes.some(dbSize => {
                 const normalizedDbSize = dbSize.toLowerCase();
@@ -143,7 +171,7 @@ export default async function CategoryPage({ params, searchParams }) {
                 <div className="max-w-[1440px] mx-auto px-4 md:px-12 flex flex-col md:flex-row gap-8 lg:gap-12">
 
                     {/* Sidebar (Filters) */}
-                    <FilterSidebar />
+                    <FilterSidebar dynamicMaxPrice={absoluteCategoryMax} />
 
                     {/* Mobile Filter Button */}
                     <div className="md:hidden flex items-center justify-between border border-border/50 p-4 rounded-sm">
@@ -160,7 +188,7 @@ export default async function CategoryPage({ params, searchParams }) {
 
                         {products.length > 0 ? (
                             <>
-                                <StaggerContainer className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-x-6 md:gap-y-12">
+                                <StaggerContainer className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12">
                                     {paginatedProducts.map((product) => (
                                         <FadeUp key={product.id} className="h-full w-full">
                                             <ProductCard {...product} />

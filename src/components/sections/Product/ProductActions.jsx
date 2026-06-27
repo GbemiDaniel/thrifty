@@ -53,9 +53,10 @@ export default function ProductActions({ product }) {
                 <span className="text-3xl font-bold">{product.price}</span>
             </div>
 
-            <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-                {product.description}
-            </p>
+            <div 
+                className="text-sm text-muted-foreground leading-relaxed mb-6 prose prose-sm max-w-none"
+                dangerouslySetInnerHTML={{ __html: product.description }}
+            />
 
             <hr className="border-border mb-6" />
 
