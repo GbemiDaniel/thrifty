@@ -3,10 +3,9 @@ import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import ProductCard from "@/components/shared/ProductCard/ProductCard";
 import { ScrollReveal, StaggerContainer, FadeUp } from "@/components/ui/motion-wrappers";
-import { hotDealsData } from "@/lib/constants";
 import Link from "next/link";
 
-export default function HotDeals() {
+export default function HotDeals({ initialData = {} }) {
     const [activeTab, setActiveTab] = useState("men");
 
     const tabs = [
@@ -15,7 +14,8 @@ export default function HotDeals() {
         { id: "accessories", label: "Accessories" }
     ];
 
-    const currentProducts = hotDealsData[activeTab] || [];
+    // ✅ Pull from the initialData prop populated by your Server Component
+    const currentProducts = initialData[activeTab] || [];
 
     return (
         <section className="w-full max-w-[1440px] mx-auto px-4 md:px-12 py-16 md:py-24 flex flex-col items-center overflow-hidden">
@@ -36,8 +36,8 @@ export default function HotDeals() {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`relative pb-2 text-sm md:text-base font-medium transition-colors ${activeTab === tab.id
-                                    ? "text-foreground"
-                                    : "text-foreground/50 hover:text-foreground/80"
+                                ? "text-foreground"
+                                : "text-foreground/50 hover:text-foreground/80"
                                 }`}
                         >
                             {tab.label}
@@ -50,8 +50,7 @@ export default function HotDeals() {
                 </div>
             </ScrollReveal>
 
-            {/* 
-                THE FIX: 
+            {/* THE FIX: 
                 1. AnimatePresence crossfades the DOM nodes to prevent layout thrashing.
                 2. StaggerContainer uses ONE observer for the whole grid.
                 3. FadeUp animates the individual cards without extra observers.
@@ -63,7 +62,8 @@ export default function HotDeals() {
                 >
                     {currentProducts.map((product) => (
                         <FadeUp key={product.id} className="h-full w-full">
-                            <ProductCard {...product} />
+                            {/* ✅ Pass the hidePrice prop exclusively here to remove prices from the grid */}
+                            <ProductCard {...product} hidePrice={true} />
                         </FadeUp>
                     ))}
                 </StaggerContainer>

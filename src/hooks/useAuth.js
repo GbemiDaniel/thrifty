@@ -10,17 +10,18 @@ export function useAuth() {
 
     useEffect(() => {
         const fetchUserAndProfile = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            
-            if (session?.user) {
-                setUser(session.user);
+            // ✅ Upgraded to getUser() for absolute server-side verification
+            const { data: { user }, error } = await supabase.auth.getUser();
+
+            if (user && !error) {
+                setUser(user);
                 // Fetch the profile data for RBAC and UI personalization
                 const { data } = await supabase
                     .from('profiles')
                     .select('*')
-                    .eq('id', session.user.id)
+                    .eq('id', user.id)
                     .single();
-                
+
                 setProfile(data);
             } else {
                 setUser(null);

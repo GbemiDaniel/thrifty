@@ -38,15 +38,6 @@ export default async function ProductPage({ params }) {
     // Transform the payload to match the UI Contract
     const product = mapSupabaseToUIProduct(rawProduct);
 
-    // --- INJECT THIS X-RAY DIAGNOSTIC BLOCK ---
-    console.log("\n====== PDP IMAGE X-RAY ======");
-    console.log("1. Product Title:", product?.title);
-    console.log("2. Singular 'image' property:", product?.image);
-    console.log("3. Plural 'images' array property:", product?.images);
-    console.log("4. Raw DB 'images' array:", rawProduct?.images);
-    console.log("=============================\n");
-    // ------------------------------------------
-
     // Capitalize category for the breadcrumb UI
     const displayCategory = product.category.charAt(0).toUpperCase() + product.category.slice(1);
 

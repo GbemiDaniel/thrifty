@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { Search, ChevronDown, ChevronLeft, ChevronRight, Trash } from "lucide-react";
 import { toast } from "sonner";
+import { createClient } from "@/utils/supabase/client";
 import ProductActions from "./ProductActions";
 import DeleteProductDialog from "./DeleteProductDialog";
 import {
@@ -25,6 +27,9 @@ const formatTableText = (text, maxWords = 5, stripHtml = false) => {
 };
 
 export default function ProductsTableClient({ processedProducts, allCount, draftCount, publishedCount }) {
+  const router = useRouter();
+  const supabase = createClient();
+  const [isDeleting, setIsDeleting] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
   
   // 1. Define State Variables
@@ -126,6 +131,27 @@ export default function ProductsTableClient({ processedProducts, allCount, draft
       }
   };
 
+  const handleBulkDelete = async () => {
+      if (selectedIds.length === 0) return;
+      
+      setIsDeleting(true);
+      const toastId = toast.loading("Deleting selected products...");
+      
+      try {
+          const { error } = await supabase.from('products').delete().in('id', selectedIds);
+          if (error) throw error;
+          
+          toast.success("Products deleted successfully", { id: toastId });
+          setSelectedIds([]);
+          router.refresh();
+      } catch (error) {
+          console.error("Bulk delete error:", error);
+          toast.error("Failed to delete products.", { id: toastId });
+      } finally {
+          setIsDeleting(false);
+      }
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-sm flex flex-col relative">
       {/* Filter Tabs */}
@@ -166,13 +192,11 @@ export default function ProductsTableClient({ processedProducts, allCount, draft
                       Cancel
                   </button>
                   <button 
-                      onClick={() => {
-                          // Placeholder for future bulk delete logic
-                          toast.error("Bulk delete requires a backend route update.");
-                      }}
-                      className="flex items-center gap-2 bg-destructive text-white hover:bg-destructive/90 px-4 py-1.5 rounded-lg text-sm font-medium transition-colors shadow-sm"
+                      onClick={handleBulkDelete}
+                      disabled={isDeleting}
+                      className="flex items-center gap-2 bg-destructive text-white hover:bg-destructive/90 px-4 py-1.5 rounded-lg text-sm font-medium transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                      <Trash className="w-4 h-4" /> Delete Selected
+                      <Trash className="w-4 h-4" /> {isDeleting ? "Deleting..." : "Delete Selected"}
                   </button>
               </div>
           </div>
